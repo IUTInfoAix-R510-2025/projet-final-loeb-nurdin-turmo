@@ -1,23 +1,299 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Projet Final</title>
- <style>
-  body {
-   font-family: Arial, sans-serif;
-   margin: 0;
-   padding: 20px;
-   background-color: #f5f5f5;
-  }
-  h1 {
-   color: #333;
-  }
- </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plateforme IoT - Capteurs Environnementaux</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
- <h1>Bienvenue</h1>
- <p>Projet Final - Loeb, Nurdin, Turmo</p>
+    <!-- En-tête de l'application -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-section">
+                <h1 class="app-title">🌍 SteamCity - Plateforme IoT</h1>
+                <p class="app-subtitle">Capteurs Environnementaux pour l'Enseignement</p>
+            </div>
+            <div class="user-info">
+                <span class="user-name">Loeb, Nurdin, Turmo</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Menu de navigation principal -->
+    <nav class="main-nav">
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="#" data-route="map" class="nav-link active">
+                    🗺️ Carte
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" data-route="experiments" class="nav-link">
+                    📋 Expériences
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" data-route="sensors" class="nav-link">
+                    📡 Capteurs
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" data-route="data" class="nav-link">
+                    📊 Données
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Conteneur principal de l'application -->
+    <main class="main-content">
+        
+        <!-- Zone de contenu: Carte -->
+        <section id="map-view" class="content-section active">
+            <div class="section-header">
+                <h2>Carte Interactive des Expériences</h2>
+                <div class="section-controls">
+                    <button class="btn btn-primary" id="refresh-map">🔄 Actualiser</button>
+                    <button class="btn btn-secondary" id="toggle-filters">🔍 Filtres</button>
+                </div>
+            </div>
+            
+            <div class="map-container">
+                <div id="filters-panel" class="filters-panel hidden">
+                    <h3>Filtres</h3>
+                    <div class="filter-group">
+                        <label for="filter-status">Statut:</label>
+                        <select id="filter-status">
+                            <option value="">Tous</option>
+                            <option value="active">Actif</option>
+                            <option value="completed">Terminé</option>
+                            <option value="pending">En attente</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-location">Lieu:</label>
+                        <input type="text" id="filter-location" placeholder="Rechercher un lieu...">
+                    </div>
+                    <button class="btn btn-primary" id="apply-filters">Appliquer</button>
+                </div>
+                <div id="map" class="map-display"></div>
+                <div class="map-legend">
+                    <h4>Légende</h4>
+                    <div class="legend-item">
+                        <span class="legend-marker active"></span> Expérience active
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-marker completed"></span> Expérience terminée
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-marker pending"></span> En attente
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Zone de contenu: Expériences -->
+        <section id="experiments-view" class="content-section">
+            <div class="section-header">
+                <h2>Liste des Expériences</h2>
+                <div class="section-controls">
+                    <button class="btn btn-primary" id="new-experiment">➕ Nouvelle Expérience</button>
+                    <button class="btn btn-secondary" id="refresh-experiments">🔄 Actualiser</button>
+                </div>
+            </div>
+            
+            <div class="experiments-container">
+                <div class="search-bar">
+                    <input type="text" id="search-experiments" placeholder="Rechercher une expérience...">
+                    <button class="btn-search">🔍</button>
+                </div>
+                
+                <div id="experiments-list" class="experiments-list">
+                    <!-- Liste des expériences chargée dynamiquement -->
+                    <div class="loading-message">Chargement des expériences...</div>
+                </div>
+                
+                <div id="experiment-details" class="experiment-details hidden">
+                    <div class="details-header">
+                        <h3 id="detail-title">Détails de l'expérience</h3>
+                        <button class="btn-close" id="close-details">✕</button>
+                    </div>
+                    <div id="detail-content" class="details-content">
+                        <!-- Détails chargés dynamiquement -->
+                    </div>
+                    <div class="details-footer">
+                        <h4>Capteurs associés</h4>
+                        <div id="associated-sensors" class="associated-sensors">
+                            <!-- Liste des capteurs -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Zone de contenu: Capteurs -->
+        <section id="sensors-view" class="content-section">
+            <div class="section-header">
+                <h2>Inventaire des Capteurs</h2>
+                <div class="section-controls">
+                    <button class="btn btn-primary" id="add-sensor">➕ Ajouter un Capteur</button>
+                    <button class="btn btn-secondary" id="refresh-sensors">🔄 Actualiser</button>
+                </div>
+            </div>
+            
+            <div class="sensors-container">
+                <div class="sensors-stats">
+                    <div class="stat-card">
+                        <h3 id="total-sensors">0</h3>
+                        <p>Total capteurs</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="active-sensors">0</h3>
+                        <p>Actifs</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="inactive-sensors">0</h3>
+                        <p>Inactifs</p>
+                    </div>
+                </div>
+                
+                <div id="sensors-list" class="sensors-list">
+                    <!-- Liste des capteurs chargée dynamiquement -->
+                    <div class="loading-message">Chargement des capteurs...</div>
+                </div>
+                
+                <div id="sensor-realtime" class="sensor-realtime">
+                    <h3>État en temps réel</h3>
+                    <div id="realtime-data" class="realtime-data">
+                        <p>Sélectionnez un capteur pour voir son état en temps réel</p>
+                    </div>
+                </div>
+                
+                <div id="sensor-history" class="sensor-history">
+                    <h3>Historique</h3>
+                    <div id="history-chart" class="history-chart">
+                        <canvas id="sensor-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Zone de contenu: Données -->
+        <section id="data-view" class="content-section">
+            <div class="section-header">
+                <h2>Analyse des Données</h2>
+                <div class="section-controls">
+                    <button class="btn btn-primary" id="export-data">📥 Exporter</button>
+                    <button class="btn btn-secondary" id="refresh-data">🔄 Actualiser</button>
+                </div>
+            </div>
+            
+            <div class="data-container">
+                <div class="data-filters">
+                    <div class="filter-group">
+                        <label for="data-experiment">Expérience:</label>
+                        <select id="data-experiment">
+                            <option value="">Toutes</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="data-sensor">Capteur:</label>
+                        <select id="data-sensor">
+                            <option value="">Tous</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="data-period">Période:</label>
+                        <select id="data-period">
+                            <option value="24h">24 heures</option>
+                            <option value="7d">7 jours</option>
+                            <option value="30d">30 jours</option>
+                            <option value="custom">Personnalisée</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="apply-data-filters">Appliquer</button>
+                </div>
+                
+                <div class="data-visualizations">
+                    <div class="chart-container">
+                        <h3>Évolution temporelle</h3>
+                        <canvas id="time-chart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Distribution des valeurs</h3>
+                        <canvas id="distribution-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="statistics-panel">
+                    <h3>Statistiques</h3>
+                    <div id="statistics-content" class="statistics-content">
+                        <div class="stat-item">
+                            <span class="stat-label">Moyenne:</span>
+                            <span class="stat-value" id="stat-mean">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Minimum:</span>
+                            <span class="stat-value" id="stat-min">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Maximum:</span>
+                            <span class="stat-value" id="stat-max">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Écart-type:</span>
+                            <span class="stat-value" id="stat-std">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="data-table">
+                    <h3>Tableau des données</h3>
+                    <div class="table-wrapper">
+                        <table id="measurements-table">
+                            <thead>
+                                <tr>
+                                    <th>Date/Heure</th>
+                                    <th>Capteur</th>
+                                    <th>Type</th>
+                                    <th>Valeur</th>
+                                    <th>Unité</th>
+                                </tr>
+                            </thead>
+                            <tbody id="measurements-tbody">
+                                <tr>
+                                    <td colspan="5" class="loading-message">Chargement des données...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <p>&copy; 2025 SteamCity - Projet R5.Real.10 - IUT Aix-Marseille</p>
+            <p>Loeb, Nurdin, Turmo</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="js/config.js"></script>
+    <script type="module" src="js/api.js"></script>
+    <script type="module" src="js/router.js"></script>
+    <script type="module" src="js/map.js"></script>
+    <script type="module" src="js/experiments.js"></script>
+    <script type="module" src="js/sensors.js"></script>
+    <script type="module" src="js/data.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
