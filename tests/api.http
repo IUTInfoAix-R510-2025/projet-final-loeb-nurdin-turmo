@@ -1,0 +1,25 @@
+### Health Check
+GET http://localhost:3000/api/health
+
+### Liste des expériences
+GET http://localhost:3000/api/experiments
+
+### Détail d'une expérience
+GET http://localhost:3000/api/experiments/exp-001
+
+### Créer une expérience
+POST http://localhost:3000/api/experiments
+Content-Type: application/json
+
+{
+  "id": "exp-new",
+  "title": "Nouvelle expérience",
+  "city": "Aix-en-Provence",
+  "cluster_id": 2
+}
+
+### Liste des capteurs d'une expérience
+GET http://localhost:3000/api/sensors/devices?experimentId=exp-001
+
+### Mesures des dernières 24h
+GET http://localhost:3000/api/sensors/measurements?experimentId=exp-001&period=24h
