@@ -14,12 +14,61 @@ async function routes(fastify, options) {
       if (type) filter.type = type;
       if (status) filter.status = status;
       
-      const sensors = await db.collection('sensors').find(filter).toArray();
+      const sensors = await db.collection('sensor_devices').find(filter).toArray();
       
       return {
         success: true,
         count: sensors.length,
         data: sensors
+      };
+    } catch (error) {
+      reply.code(500);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  // GET /api/sensors/devices - Liste tous les capteurs (alias de /)
+  fastify.get('/devices', async (request, reply) => {
+    try {
+      const db = getDB();
+      const { experiment_id, type, status } = request.query;
+      
+      // Construction du filtre
+      const filter = {};
+      if (experiment_id) filter.experiment_id = experiment_id;
+      if (type) filter.type = type;
+      if (status) filter.status = status;
+      
+      const sensors = await db.collection('sensor_devices').find(filter).toArray();
+      
+      return {
+        success: true,
+        count: sensors.length,
+        data: sensors
+      };
+    } catch (error) {
+      reply.code(500);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  // GET /api/sensors/types - Liste tous les types de capteurs
+  fastify.get('/types', async (request, reply) => {
+    try {
+      const db = getDB();
+      
+      const sensorTypes = await db.collection('sensor_types').find({}).toArray();
+      
+      return {
+        success: true,
+        count: sensorTypes.length,
+        data: sensorTypes
       };
     } catch (error) {
       reply.code(500);
@@ -36,7 +85,7 @@ async function routes(fastify, options) {
       const db = getDB();
       const { id } = request.params;
       
-      const sensor = await db.collection('sensors').findOne({ id });
+      const sensor = await db.collection('sensor_devices').findOne({ id });
       
       if (!sensor) {
         reply.code(404);
