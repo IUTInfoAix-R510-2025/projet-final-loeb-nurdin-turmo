@@ -1,0 +1,6 @@
+{
+  "name": "@iot/shared",
+  "version": "1.0.0",
+  "main": "index.js",
+  "description": "Code partagé entre les packages"
+}

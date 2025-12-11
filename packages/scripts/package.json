@@ -1,0 +1,14 @@
+{
+  "name": "@iot/scripts",
+  "version": "1.0.0",
+  "description": "Scripts utilitaires",
+  "scripts": {
+    "seed": "node seed.js",
+    "create-indexes": "node create-indexes.js"
+  },
+  "dependencies": {
+    "@iot/shared": "*",
+    "dotenv": "^16.3.0",
+    "mongodb": "^6.3.0"
+  }
+}

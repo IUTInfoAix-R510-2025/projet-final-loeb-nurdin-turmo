@@ -1,0 +1,21 @@
+{
+  "name": "projet-final-loeb-nurdin-turmo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Projet IoT MongoDB - Monorepo",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "dev:api": "npm run dev --workspace=@iot/api",
+    "dev:web": "npm run dev --workspace=@iot/web",
+    "start:api": "npm run start --workspace=@iot/api",
+    "start:web": "npm run start --workspace=@iot/web",
+    "seed": "npm run seed --workspace=@iot/scripts",
+    "create-indexes": "npm run create-indexes --workspace=@iot/scripts"
+  },
+  "keywords": ["iot", "mongodb", "sensor"],
+  "author": "",
+  "license": "ISC"
+}

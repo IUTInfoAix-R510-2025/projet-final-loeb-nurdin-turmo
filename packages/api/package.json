@@ -1,0 +1,20 @@
+{
+  "name": "@iot/api",
+  "version": "1.0.0",
+  "description": "API Backend Fastify",
+  "main": "src/app.js",
+  "scripts": {
+    "dev": "nodemon src/app.js",
+    "start": "node src/app.js"
+  },
+  "dependencies": {
+    "@fastify/cors": "^9.0.0",
+    "@iot/shared": "*",
+    "dotenv": "^16.3.0",
+    "fastify": "^4.24.0",
+    "mongodb": "^6.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}
