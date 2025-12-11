@@ -13,7 +13,7 @@ async function buildServer() {
 
   // Routes API
   await fastify.register(require('./routes/experiments'), { prefix: '/api/experiments' });
-  await fastify.register(require('./routes/sensors'), { prefix: '/api/sensors' });
+  await fastify.register(require('./routes/sensor'), { prefix: '/api/sensors' });
   await fastify.register(require('./routes/measurements'), { prefix: '/api/sensors/measurements' });
 
   // Health check
