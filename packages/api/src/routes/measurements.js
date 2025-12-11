@@ -79,6 +79,113 @@ async function routes(fastify, options) {
       };
     }
   });
+
+  // POST /api/sensors/measurements - Créer une nouvelle mesure
+  fastify.post('/', async (request, reply) => {
+    try {
+      const db = getDB();
+      const measurementData = request.body;
+
+      // Validation basique
+      if (!measurementData.sensor_id || measurementData.value === undefined) {
+        reply.code(400);
+        return {
+          success: false,
+          error: 'Missing required fields: sensor_id and value'
+        };
+      }
+
+      // Ajouter le timestamp si absent
+      const newMeasurement = {
+        ...measurementData,
+        timestamp: measurementData.timestamp ? new Date(measurementData.timestamp) : new Date()
+      };
+
+      await db.collection('measurements').insertOne(newMeasurement);
+
+      reply.code(201);
+      return {
+        success: true,
+        message: 'Measurement created successfully',
+        data: newMeasurement
+      };
+    } catch (error) {
+      reply.code(500);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  // PUT /api/sensors/measurements/:id - Modifier une mesure
+  fastify.put('/:id', async (request, reply) => {
+    try {
+      const db = getDB();
+      const { id } = request.params;
+      const updateData = request.body;
+
+      // Ne pas permettre de modifier l'_id
+      delete updateData._id;
+
+      const { ObjectId } = require('mongodb');
+      const result = await db.collection('measurements').findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: updateData },
+        { returnDocument: 'after' }
+      );
+
+      if (!result) {
+        reply.code(404);
+        return {
+          success: false,
+          error: 'Measurement not found'
+        };
+      }
+
+      return {
+        success: true,
+        message: 'Measurement updated successfully',
+        data: result
+      };
+    } catch (error) {
+      reply.code(500);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  // DELETE /api/sensors/measurements/:id - Supprimer une mesure
+  fastify.delete('/:id', async (request, reply) => {
+    try {
+      const db = getDB();
+      const { id } = request.params;
+
+      const { ObjectId } = require('mongodb');
+      const result = await db.collection('measurements').deleteOne({ _id: new ObjectId(id) });
+
+      if (result.deletedCount === 0) {
+        reply.code(404);
+        return {
+          success: false,
+          error: 'Measurement not found'
+        };
+      }
+
+      return {
+        success: true,
+        message: 'Measurement deleted successfully'
+      };
+    } catch (error) {
+      reply.code(500);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
 }
 
 module.exports = routes;
