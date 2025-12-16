@@ -140,7 +140,7 @@ function renderSensors(sensors) {
     container.innerHTML = sensors.map(sensor => {
         const statusColor = getStatusColor(sensor.status);
         const statusIcon = getStatusIcon(sensor.status);
-        const typeInfo = SENSOR_TYPES[sensor.sensor_type_id] || { label: sensor.sensor_type_id, unit: '', icon: '📊' };
+        const typeInfo = SENSOR_TYPES[sensor.sensor_type_id] || { name: sensor.sensor_type_id, unit: '', icon: '📊' };
         
         // Formater la localisation
         let locationText = 'Non défini';
@@ -158,7 +158,7 @@ function renderSensors(sensors) {
                     <div class="sensor-type">
                         <span class="sensor-icon">${typeInfo.icon || '📊'}</span>
                         <div>
-                            <h4>${typeInfo.label || sensor.sensor_type_id}</h4>
+                            <h4>${typeInfo.name || sensor.sensor_type_id}</h4>
                             <small>${sensor.id || sensor._id}</small>
                         </div>
                     </div>
@@ -243,7 +243,7 @@ async function showSensorDetails(sensor) {
     // Afficher le panneau
     detailsPanel.classList.remove('hidden');
     
-    const typeInfo = SENSOR_TYPES[sensor.sensor_type_id] || { label: sensor.sensor_type_id, unit: '', icon: '📊' };
+    const typeInfo = SENSOR_TYPES[sensor.sensor_type_id] || { name: sensor.sensor_type_id, unit: '', icon: '📊' };
     const statusColor = getStatusColor(sensor.status);
     
     // Formater la localisation
@@ -257,7 +257,7 @@ async function showSensorDetails(sensor) {
     }
     
     // Mettre à jour le titre
-    title.textContent = `${typeInfo.icon} ${typeInfo.label} - ${sensor.id || sensor._id}`;
+    title.textContent = `${typeInfo.icon} ${typeInfo.name} - ${sensor.id || sensor._id}`;
     
     // Afficher les informations
     content.innerHTML = `
@@ -272,7 +272,7 @@ async function showSensorDetails(sensor) {
                 <strong>Nom:</strong> ${sensor.name || 'Sans nom'}
             </div>
             <div class="info-row">
-                <strong>Type:</strong> ${typeInfo.label}
+                <strong>Type:</strong> ${typeInfo.name}
             </div>
             <div class="info-row">
                 <strong>Expérience:</strong> ${sensor.experiment_id || 'Aucune'}
@@ -290,9 +290,7 @@ async function showSensorDetails(sensor) {
             <div class="info-row">
                 <strong>Modèle:</strong> ${sensor.metadata.model || 'N/A'}
             </div>
-            ` : ''}lass="info-row">
-                <strong>Unité de mesure:</strong> ${typeInfo.unit}
-            </div>
+            ` : ''}
         </div>
         
         <div class="measurements-section">
