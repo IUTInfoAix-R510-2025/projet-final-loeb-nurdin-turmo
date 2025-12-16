@@ -1,18 +1,25 @@
-import { API_ENDPOINTS } from './config.js';
+import { API_ENDPOINTS, CLUSTERS } from './config.js';
 
 let map = null;
-let markers = [];
+let markersLayer = {}; // Stocke les marqueurs par cluster
+let allExperiments = []; // Stocke toutes les expériences
+
+// Couleurs des clusters
+const CLUSTER_COLORS = {
+    1: '#3498db', // Blue - Governance
+    2: '#27ae60', // Green - Environmental
+    3: '#e74c3c', // Red - Mobility
+    4: '#f39c12', // Orange - Energy
+    5: '#9b59b6'  // Purple - AI & Tech
+};
 
 /**
  * Initialise la carte Leaflet
  */
 export function init() {
-    // Coordonnées par défaut (Paris/France ou local)
-    // On peut ajuster selon la localisation du projet (Aix-Marseille vu le footer)
     const defaultCenter = [43.529742, 5.447427]; // Aix-en-Provence
-    const defaultZoom = 13;
+    const defaultZoom = 10;
 
-    // Initialiser la carte si le conteneur existe
     if (document.getElementById('map')) {
         map = L.map('map').setView(defaultCenter, defaultZoom);
 
@@ -20,10 +27,45 @@ export function init() {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Gestionnaires d'événements pour les contrôles de la carte
+        // Initialiser les layers pour chaque cluster
+        for (let clusterId in CLUSTER_COLORS) {
+            markersLayer[clusterId] = L.layerGroup().addTo(map);
+        }
+
+        // Gestionnaires d'événements
         document.getElementById('refresh-map')?.addEventListener('click', refresh);
         document.getElementById('toggle-filters')?.addEventListener('click', toggleFilters);
         document.getElementById('apply-filters')?.addEventListener('click', applyFilters);
+        
+        // Gestionnaires pour les checkboxes de la légende
+        initLegendFilters();
+    }
+}
+
+/**
+ * Initialise les filtres de la légende
+ */
+function initLegendFilters() {
+    for (let i = 1; i <= 5; i++) {
+        const checkbox = document.getElementById(`cluster-${i}`);
+        if (checkbox) {
+            checkbox.addEventListener('change', (e) => {
+                toggleClusterVisibility(i, e.target.checked);
+            });
+        }
+    }
+}
+
+/**
+ * Affiche/Masque un cluster
+ */
+function toggleClusterVisibility(clusterId, visible) {
+    if (markersLayer[clusterId]) {
+        if (visible) {
+            map.addLayer(markersLayer[clusterId]);
+        } else {
+            map.removeLayer(markersLayer[clusterId]);
+        }
     }
 }
 
@@ -33,23 +75,18 @@ export function init() {
 export async function refresh() {
     if (!map) return;
 
-    // Invalider la taille de la carte pour s'assurer qu'elle s'affiche correctement
-    // après avoir été cachée (display: none)
     setTimeout(() => {
         map.invalidateSize();
     }, 100);
 
     try {
-        // Charger les expériences depuis l'API
-        // Note: En production, utiliser fetchAPI de api.js
-        // Pour l'instant, on simule ou on tente l'appel
         const response = await fetch(API_ENDPOINTS.experiments);
         if (response.ok) {
-            const experiments = await response.json();
-            displayExperiments(experiments);
+            const result = await response.json();
+            allExperiments = result.data || result;
+            displayExperiments(allExperiments);
         } else {
             console.warn('Impossible de charger les expériences pour la carte');
-            // Données de démonstration si l'API échoue
             displayDemoData();
         }
     } catch (error) {
@@ -63,18 +100,19 @@ export async function refresh() {
  * @param {Array} experiments - Liste des expériences
  */
 function displayExperiments(experiments) {
-    // Nettoyer les marqueurs existants
-    markers.forEach(marker => map.removeLayer(marker));
-    markers = [];
+    // Nettoyer tous les marqueurs existants
+    for (let clusterId in markersLayer) {
+        markersLayer[clusterId].clearLayers();
+    }
 
     experiments.forEach(exp => {
         if (exp.location && exp.location.coordinates) {
-            const [lng, lat] = exp.location.coordinates; // GeoJSON est [lng, lat]
+            const [lng, lat] = exp.location.coordinates;
             
-            // Déterminer la couleur en fonction du statut
-            let color = '#3498db'; // blue
-            if (exp.status === 'active') color = '#27ae60'; // green
-            if (exp.status === 'pending') color = '#f39c12'; // orange
+            // Déterminer la couleur selon le cluster
+            const clusterId = exp.cluster_id || 1;
+            const color = CLUSTER_COLORS[clusterId] || '#95a5a6';
+            const clusterName = CLUSTERS[clusterId]?.label || 'Unknown';
 
             const marker = L.circleMarker([lat, lng], {
                 radius: 8,
@@ -83,15 +121,23 @@ function displayExperiments(experiments) {
                 weight: 2,
                 opacity: 1,
                 fillOpacity: 0.8
-            }).addTo(map);
+            });
 
             marker.bindPopup(`
-                <strong>${exp.title}</strong><br>
-                Statut: ${exp.status}<br>
-                <button onclick="window.location.hash='#experiments'">Voir détails</button>
+                <div style="min-width: 200px;">
+                    <strong>${exp.title || 'Sans titre'}</strong><br>
+                    <span style="color: ${color};">● ${clusterName}</span><br>
+                    ${exp.school || ''} ${exp.city ? '- ' + exp.city : ''}<br>
+                    <button onclick="window.location.hash='experiments/${exp.id || exp._id}'">
+                        Voir détails
+                    </button>
+                </div>
             `);
 
-            markers.push(marker);
+            // Ajouter au layer du cluster correspondant
+            if (markersLayer[clusterId]) {
+                markersLayer[clusterId].addLayer(marker);
+            }
         }
     });
 }
@@ -103,20 +149,41 @@ function displayDemoData() {
     const demoExperiments = [
         {
             title: "Qualité de l'air - Centre Ville",
-            status: "active",
+            cluster_id: 2,
+            school: "Lycée Victor Hugo",
+            city: "Aix-en-Provence",
             location: { coordinates: [5.447427, 43.529742] }
         },
         {
             title: "Bruit - Campus",
-            status: "completed",
+            cluster_id: 2,
+            school: "Collège Marie Curie",
+            city: "Marseille",
             location: { coordinates: [5.439, 43.525] }
         },
         {
-            title: "Température - Parc Jourdan",
-            status: "pending",
+            title: "Mobilité urbaine",
+            cluster_id: 3,
+            school: "Lycée Thiers",
+            city: "Marseille",
             location: { coordinates: [5.452, 43.526] }
+        },
+        {
+            title: "Consommation énergétique",
+            cluster_id: 4,
+            school: "École Jules Ferry",
+            city: "Aix-en-Provence",
+            location: { coordinates: [5.445, 43.532] }
+        },
+        {
+            title: "IA et reconnaissance d'images",
+            cluster_id: 5,
+            school: "Lycée Vauvenargues",
+            city: "Aix-en-Provence",
+            location: { coordinates: [5.450, 43.528] }
         }
     ];
+    allExperiments = demoExperiments;
     displayExperiments(demoExperiments);
 }
 
@@ -132,10 +199,18 @@ function toggleFilters() {
  * Applique les filtres sélectionnés
  */
 function applyFilters() {
-    const status = document.getElementById('filter-status').value;
-    const location = document.getElementById('filter-location').value;
+    const location = document.getElementById('filter-location').value.toLowerCase();
     
-    console.log(`Filtres appliqués: Statut=${status}, Lieu=${location}`);
-    // Ici, on rechargerait les données avec les filtres
-    refresh();
+    let filteredExperiments = allExperiments;
+    
+    // Filtre par lieu (ville ou école)
+    if (location) {
+        filteredExperiments = filteredExperiments.filter(exp => 
+            (exp.city && exp.city.toLowerCase().includes(location)) ||
+            (exp.school && exp.school.toLowerCase().includes(location)) ||
+            (exp.title && exp.title.toLowerCase().includes(location))
+        );
+    }
+    
+    displayExperiments(filteredExperiments);
 }

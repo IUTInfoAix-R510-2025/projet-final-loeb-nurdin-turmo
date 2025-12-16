@@ -64,15 +64,6 @@
                 <div id="filters-panel" class="filters-panel hidden">
                     <h3>Filtres</h3>
                     <div class="filter-group">
-                        <label for="filter-status">Statut:</label>
-                        <select id="filter-status">
-                            <option value="">Tous</option>
-                            <option value="active">Actif</option>
-                            <option value="completed">Terminé</option>
-                            <option value="pending">En attente</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
                         <label for="filter-location">Lieu:</label>
                         <input type="text" id="filter-location" placeholder="Rechercher un lieu...">
                     </div>
@@ -80,15 +71,31 @@
                 </div>
                 <div id="map" class="map-display"></div>
                 <div class="map-legend">
-                    <h4>Légende</h4>
-                    <div class="legend-item">
-                        <span class="legend-marker active"></span> Expérience active
+                    <h4>Légende des Clusters</h4>
+                    <div class="legend-item" data-cluster="1">
+                        <input type="checkbox" id="cluster-1" checked>
+                        <span class="legend-marker cluster-1"></span> 
+                        <label for="cluster-1">Governance</label>
                     </div>
-                    <div class="legend-item">
-                        <span class="legend-marker completed"></span> Expérience terminée
+                    <div class="legend-item" data-cluster="2">
+                        <input type="checkbox" id="cluster-2" checked>
+                        <span class="legend-marker cluster-2"></span> 
+                        <label for="cluster-2">Environmental</label>
                     </div>
-                    <div class="legend-item">
-                        <span class="legend-marker pending"></span> En attente
+                    <div class="legend-item" data-cluster="3">
+                        <input type="checkbox" id="cluster-3" checked>
+                        <span class="legend-marker cluster-3"></span> 
+                        <label for="cluster-3">Mobility</label>
+                    </div>
+                    <div class="legend-item" data-cluster="4">
+                        <input type="checkbox" id="cluster-4" checked>
+                        <span class="legend-marker cluster-4"></span> 
+                        <label for="cluster-4">Energy</label>
+                    </div>
+                    <div class="legend-item" data-cluster="5">
+                        <input type="checkbox" id="cluster-5" checked>
+                        <span class="legend-marker cluster-5"></span> 
+                        <label for="cluster-5">AI & Tech</label>
                     </div>
                 </div>
             </div>
@@ -105,9 +112,35 @@
             </div>
             
             <div class="experiments-container">
-                <div class="search-bar">
-                    <input type="text" id="search-experiments" placeholder="Rechercher une expérience...">
-                    <button class="btn-search">🔍</button>
+                <div class="experiments-filters">
+                    <div class="search-bar">
+                        <input type="text" id="search-experiments" placeholder="Rechercher par nom, ville ou école...">
+                        <button class="btn-search">🔍</button>
+                    </div>
+                    
+                    <div class="filter-clusters">
+                        <label>Filtrer par cluster:</label>
+                        <div class="cluster-filters">
+                            <button class="cluster-filter active" data-cluster="all">
+                                Tous
+                            </button>
+                            <button class="cluster-filter" data-cluster="1" style="border-color: #3498db;">
+                                🏛️ Governance
+                            </button>
+                            <button class="cluster-filter" data-cluster="2" style="border-color: #27ae60;">
+                                🌿 Environmental
+                            </button>
+                            <button class="cluster-filter" data-cluster="3" style="border-color: #e74c3c;">
+                                🚗 Mobility
+                            </button>
+                            <button class="cluster-filter" data-cluster="4" style="border-color: #f39c12;">
+                                ⚡ Energy
+                            </button>
+                            <button class="cluster-filter" data-cluster="5" style="border-color: #9b59b6;">
+                                🤖 AI & Tech
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 
                 <div id="experiments-list" class="experiments-list">
