@@ -14,7 +14,7 @@ async function routes(fastify, options) {
       if (type) filter.type = type;
       if (status) filter.status = status;
       
-      const sensors = await db.collection('sensor_devices').find(filter).toArray();
+      const sensors = await db.collection('sensor_devices').find(filter).toArray(); // Récupère les capteurs
       
       return {
         success: true,

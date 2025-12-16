@@ -101,12 +101,19 @@ function applyFilters() {
     
     // Filtre par type
     if (currentFilters.type !== 'all') {
-        filtered = filtered.filter(s => s.type === currentFilters.type);
+        filtered = filtered.filter(s => s.sensor_type_id === currentFilters.type);
     }
     
     // Filtre par statut
     if (currentFilters.status !== 'all') {
-        filtered = filtered.filter(s => s.status === currentFilters.status);
+        // Mapper les statuts : online/offline -> active/inactive
+        const statusMap = {
+            'active': 'online',
+            'inactive': 'offline',
+            'maintenance': 'maintenance'
+        };
+        const targetStatus = statusMap[currentFilters.status] || currentFilters.status;
+        filtered = filtered.filter(s => s.status === targetStatus);
     }
     
     // Filtre par expérience
@@ -133,7 +140,17 @@ function renderSensors(sensors) {
     container.innerHTML = sensors.map(sensor => {
         const statusColor = getStatusColor(sensor.status);
         const statusIcon = getStatusIcon(sensor.status);
-        const typeInfo = SENSOR_TYPES[sensor.type] || { label: sensor.type, unit: '' };
+        const typeInfo = SENSOR_TYPES[sensor.sensor_type_id] || { label: sensor.sensor_type_id, unit: '', icon: '📊' };
+        
+        // Formater la localisation
+        let locationText = 'Non défini';
+        if (sensor.location) {
+            if (typeof sensor.location === 'object') {
+                locationText = `${sensor.location.building || ''} ${sensor.location.room || ''}`.trim() || 'Non défini';
+            } else {
+                locationText = sensor.location;
+            }
+        }
         
         return `
             <div class="sensor-card" onclick="window.showSensorDetails('${sensor.id || sensor._id}')">
@@ -141,7 +158,7 @@ function renderSensors(sensors) {
                     <div class="sensor-type">
                         <span class="sensor-icon">${typeInfo.icon || '📊'}</span>
                         <div>
-                            <h4>${typeInfo.label || sensor.type}</h4>
+                            <h4>${typeInfo.label || sensor.sensor_type_id}</h4>
                             <small>${sensor.id || sensor._id}</small>
                         </div>
                     </div>
@@ -153,17 +170,14 @@ function renderSensors(sensors) {
                 </div>
                 <div class="sensor-card-body">
                     <div class="sensor-info-row">
-                        <span>📍 ${sensor.location || 'Non défini'}</span>
+                        <span>📍 ${locationText}</span>
                     </div>
                     <div class="sensor-info-row">
                         <span>🔬 ${sensor.experiment_id || 'Aucune expérience'}</span>
                     </div>
-                    ${sensor.last_value !== undefined ? `
-                        <div class="sensor-last-value">
-                            <strong>${sensor.last_value} ${typeInfo.unit || ''}</strong>
-                            <small>Dernière mesure</small>
-                        </div>
-                    ` : ''}
+                    <div class="sensor-info-row">
+                        <span>📛 ${sensor.name || 'Sans nom'}</span>
+                    </div>
                 </div>
             </div>
         `;
@@ -183,8 +197,8 @@ function renderSensors(sensors) {
  */
 function updateStats(sensors) {
     document.getElementById('total-sensors').textContent = sensors.length;
-    const active = sensors.filter(s => s.status === 'active').length;
-    const inactive = sensors.filter(s => s.status === 'inactive' || s.status === 'offline').length;
+    const active = sensors.filter(s => s.status === 'online').length;
+    const inactive = sensors.filter(s => s.status === 'offline' || s.status === 'maintenance').length;
     document.getElementById('active-sensors').textContent = active;
     document.getElementById('inactive-sensors').textContent = inactive;
 }
@@ -194,9 +208,10 @@ function updateStats(sensors) {
  */
 function getStatusColor(status) {
     const colors = {
+        'online': '#27ae60',
         'active': '#27ae60',
-        'inactive': '#95a5a6',
         'offline': '#e74c3c',
+        'inactive': '#95a5a6',
         'maintenance': '#f39c12'
     };
     return colors[status] || '#95a5a6';
@@ -207,9 +222,10 @@ function getStatusColor(status) {
  */
 function getStatusIcon(status) {
     const icons = {
+        'online': '●',
         'active': '●',
-        'inactive': '○',
         'offline': '✕',
+        'inactive': '○',
         'maintenance': '⚠'
     };
     return icons[status] || '?';
@@ -227,8 +243,18 @@ async function showSensorDetails(sensor) {
     // Afficher le panneau
     detailsPanel.classList.remove('hidden');
     
-    const typeInfo = SENSOR_TYPES[sensor.type] || { label: sensor.type, unit: '', icon: '📊' };
+    const typeInfo = SENSOR_TYPES[sensor.sensor_type_id] || { label: sensor.sensor_type_id, unit: '', icon: '📊' };
     const statusColor = getStatusColor(sensor.status);
+    
+    // Formater la localisation
+    let locationText = 'Non définie';
+    if (sensor.location) {
+        if (typeof sensor.location === 'object') {
+            locationText = `${sensor.location.building || ''} ${sensor.location.room || ''}`.trim() || 'Non définie';
+        } else {
+            locationText = sensor.location;
+        }
+    }
     
     // Mettre à jour le titre
     title.textContent = `${typeInfo.icon} ${typeInfo.label} - ${sensor.id || sensor._id}`;
@@ -243,15 +269,28 @@ async function showSensorDetails(sensor) {
                 </span>
             </div>
             <div class="info-row">
+                <strong>Nom:</strong> ${sensor.name || 'Sans nom'}
+            </div>
+            <div class="info-row">
                 <strong>Type:</strong> ${typeInfo.label}
             </div>
             <div class="info-row">
                 <strong>Expérience:</strong> ${sensor.experiment_id || 'Aucune'}
             </div>
             <div class="info-row">
-                <strong>Localisation:</strong> ${sensor.location || 'Non définie'}
+                <strong>Localisation:</strong> ${locationText}
             </div>
             <div class="info-row">
+                <strong>Unité de mesure:</strong> ${typeInfo.unit}
+            </div>
+            ${sensor.metadata ? `
+            <div class="info-row">
+                <strong>Fabricant:</strong> ${sensor.metadata.manufacturer || 'N/A'}
+            </div>
+            <div class="info-row">
+                <strong>Modèle:</strong> ${sensor.metadata.model || 'N/A'}
+            </div>
+            ` : ''}lass="info-row">
                 <strong>Unité de mesure:</strong> ${typeInfo.unit}
             </div>
         </div>
