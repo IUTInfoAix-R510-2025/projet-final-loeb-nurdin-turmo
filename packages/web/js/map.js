@@ -14,6 +14,21 @@ const CLUSTER_COLORS = {
 };
 
 /**
+ * Ajuste la luminosité d'une couleur hexadécimale
+ * @param {string} color - Couleur hex (#rrggbb)
+ * @param {number} amount - Montant à ajuster (positif = plus clair, négatif = plus foncé)
+ * @returns {string} Couleur ajustée
+ */
+function adjustColor(color, amount) {
+    const clamp = (val) => Math.min(255, Math.max(0, val));
+    const num = parseInt(color.replace('#', ''), 16);
+    const r = clamp((num >> 16) + amount);
+    const g = clamp(((num >> 8) & 0x00FF) + amount);
+    const b = clamp((num & 0x0000FF) + amount);
+    return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+}
+
+/**
  * Initialise la carte Leaflet
  */
 export function init() {
@@ -145,12 +160,17 @@ function displayExperiments(experiments) {
                 });
 
                 marker.bindPopup(`
-                    <div style="min-width: 200px;">
-                        <strong>${exp.title || 'Sans titre'}</strong><br>
-                        <span style="color: ${color};">● ${clusterName}</span><br>
-                        ${exp.school || ''} ${exp.city ? '- ' + exp.city : ''}<br>
-                        <button onclick="window.location.hash='experiments/${exp.id || exp._id}'">
-                            Voir détails
+                    <div style="min-width: 220px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                        <strong style="font-size: 16px; color: #2c3e50;">${exp.title || 'Sans titre'}</strong><br>
+                        <span style="color: ${color}; font-weight: 600;">● ${clusterName}</span><br>
+                        <span style="color: #7f8c8d; font-size: 13px;">${exp.school || ''} ${exp.city ? '- ' + exp.city : ''}</span><br>
+                        <button onclick="window.location.hash='experiments/${exp.id || exp._id}'" 
+                                style="margin-top: 10px; padding: 8px 16px; background: linear-gradient(135deg, ${color}, ${adjustColor(color, -20)}); 
+                                color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; 
+                                font-size: 13px; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.2)';"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';">
+                            📋 Voir détails
                         </button>
                     </div>
                 `);

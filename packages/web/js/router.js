@@ -30,6 +30,26 @@ export class Router {
                 this.navigate('map', false);
             }
         });
+
+        // Gérer le changement de hash (pour les liens directs)
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.replace('#', '');
+            if (hash) {
+                this.navigateFromHash(hash);
+            }
+        });
+    }
+
+    /**
+     * Navigue à partir d'une URL hash (peut contenir des paramètres)
+     * @param {string} hash - Le hash sans le # (ex: "experiments/exp-001")
+     */
+    navigateFromHash(hash) {
+        const parts = hash.split('/');
+        const routeName = parts[0];
+        const params = parts.slice(1);
+        
+        this.navigate(routeName, false, params);
     }
 
     /**
@@ -45,8 +65,9 @@ export class Router {
      * Navigue vers une route spécifique
      * @param {string} routeName - Nom de la route cible
      * @param {boolean} addToHistory - Si vrai, ajoute l'état à l'historique du navigateur
+     * @param {Array} params - Paramètres optionnels de la route
      */
-    navigate(routeName, addToHistory = true) {
+    navigate(routeName, addToHistory = true, params = []) {
         // Vérifier si la route existe
         const section = document.getElementById(`${routeName}-view`);
         if (!section) {
@@ -80,7 +101,7 @@ export class Router {
 
         // 5. Exécuter le callback associé si présent
         if (this.routes[routeName]) {
-            this.routes[routeName]();
+            this.routes[routeName](params);
         }
     }
 }

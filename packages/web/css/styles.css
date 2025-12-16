@@ -799,3 +799,268 @@ tr:hover {
         text-align: center;
     }
 }
+
+/* ===== CAPTEURS ===== */
+.sensors-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sensors-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.sensors-filters {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+}
+
+.sensors-filters .filter-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.sensors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.sensor-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.sensor-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-color: var(--secondary-color);
+}
+
+.sensor-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.sensor-type {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sensor-icon {
+    font-size: 2rem;
+}
+
+.sensor-type h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+}
+
+.sensor-type small {
+    color: var(--text-light);
+    font-size: 0.8rem;
+}
+
+.sensor-status-indicator {
+    display: flex;
+    align-items: center;
+}
+
+.status-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.sensor-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sensor-info-row {
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.sensor-last-value {
+    margin-top: 10px;
+    padding: 10px;
+    background: var(--light-bg);
+    border-radius: 6px;
+    text-align: center;
+}
+
+.sensor-last-value strong {
+    display: block;
+    font-size: 1.5rem;
+    color: var(--secondary-color);
+    margin-bottom: 4px;
+}
+
+.sensor-last-value small {
+    color: var(--text-light);
+    font-size: 0.8rem;
+}
+
+/* Panneau de détails du capteur */
+.sensor-details {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 600px;
+    max-width: 90%;
+    height: 100vh;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+    z-index: 1100;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+}
+
+.sensor-details.hidden {
+    transform: translateX(100%);
+}
+
+.sensor-detail-info {
+    padding: 20px;
+    background: var(--light-bg);
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.sensor-detail-info .info-row {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sensor-detail-info .info-row:last-child {
+    border-bottom: none;
+}
+
+/* Section mesures */
+.measurements-section {
+    margin-top: 20px;
+}
+
+.measurements-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.measurements-header h4 {
+    margin: 0;
+}
+
+.period-selector {
+    display: flex;
+    gap: 5px;
+}
+
+.period-btn {
+    padding: 6px 12px;
+    border: 2px solid var(--border-color);
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.period-btn:hover {
+    border-color: var(--secondary-color);
+    background: var(--light-bg);
+}
+
+.period-btn.active {
+    background: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin: 20px 0;
+}
+
+.chart-container canvas {
+    max-height: 300px;
+}
+
+.measurements-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.stat-box {
+    background: var(--light-bg);
+    padding: 15px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.stat-box .stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--secondary-color);
+    margin-bottom: 5px;
+}
+
+.stat-box .stat-label {
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+/* Responsive capteurs */
+@media (max-width: 768px) {
+    .sensors-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .sensor-details {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .sensors-filters {
+        flex-direction: column;
+    }
+    
+    .sensors-filters .filter-group {
+        width: 100%;
+    }
+}

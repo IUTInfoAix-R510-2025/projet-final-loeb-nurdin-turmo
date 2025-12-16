@@ -22,9 +22,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         MapModule.refresh();
     });
 
-    router.on('experiments', () => {
-        console.log('Vue Expériences active');
-        ExperimentsModule.refresh();
+    router.on('experiments', (params = []) => {
+        console.log('Vue Expériences active', params);
+        ExperimentsModule.refresh(params[0]); // Passer l'ID si présent
     });
 
     router.on('sensors', () => {

@@ -7,6 +7,9 @@ export function init() {
     document.getElementById('refresh-experiments')?.addEventListener('click', refresh);
     document.getElementById('close-details')?.addEventListener('click', closeDetails);
     
+    // Rendre la fonction disponible globalement pour les popups de la carte
+    window.openExperimentDetails = openExperimentDetails;
+    
     // Recherche
     document.querySelector('.btn-search')?.addEventListener('click', () => {
         applyFilters();
@@ -58,8 +61,9 @@ function initClusterFilters() {
 
 /**
  * Rafraîchit la liste des expériences
+ * @param {string} experimentId - ID optionnel de l'expérience à ouvrir automatiquement
  */
-export async function refresh() {
+export async function refresh(experimentId = null) {
     const container = document.getElementById('experiments-list');
     if (!container) return;
 
@@ -95,6 +99,16 @@ export async function refresh() {
         }
         
         applyFilters(); // Appliquer les filtres actuels
+        
+        // Si un ID est passé, ouvrir automatiquement les détails
+        if (experimentId) {
+            setTimeout(() => {
+                const experiment = allExperiments.find(exp => exp.id === experimentId || exp._id === experimentId);
+                if (experiment) {
+                    showDetails(experiment);
+                }
+            }, 100);
+        }
     } catch (error) {
         console.error('❌ Erreur chargement expériences:', error);
         container.innerHTML = `
@@ -212,6 +226,34 @@ function getStatusLabel(status) {
         'pending': 'En attente'
     };
     return labels[status] || status;
+}
+
+/**
+ * Ouvre les détails d'une expérience depuis son ID (appelé depuis la carte)
+ */
+export async function openExperimentDetails(experimentId) {
+    // Importer le router
+    const { router } = await import('./router.js');
+    
+    // Naviguer vers la page expériences
+    router.navigate('experiments');
+    
+    // Attendre un court instant que la vue soit chargée
+    setTimeout(async () => {
+        // Charger toutes les expériences si ce n'est pas déjà fait
+        if (allExperiments.length === 0) {
+            await refresh();
+        }
+        
+        // Trouver l'expérience par son ID
+        const experiment = allExperiments.find(exp => exp.id === experimentId || exp._id === experimentId);
+        
+        if (experiment) {
+            showDetails(experiment);
+        } else {
+            console.error('Expérience non trouvée:', experimentId);
+        }
+    }, 100);
 }
 
 /**

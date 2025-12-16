@@ -165,14 +165,14 @@
         <!-- Zone de contenu: Capteurs -->
         <section id="sensors-view" class="content-section">
             <div class="section-header">
-                <h2>Inventaire des Capteurs</h2>
+                <h2>📡 Inventaire des Capteurs</h2>
                 <div class="section-controls">
-                    <button class="btn btn-primary" id="add-sensor">➕ Ajouter un Capteur</button>
                     <button class="btn btn-secondary" id="refresh-sensors">🔄 Actualiser</button>
                 </div>
             </div>
             
             <div class="sensors-container">
+                <!-- Statistiques -->
                 <div class="sensors-stats">
                     <div class="stat-card">
                         <h3 id="total-sensors">0</h3>
@@ -180,30 +180,55 @@
                     </div>
                     <div class="stat-card">
                         <h3 id="active-sensors">0</h3>
-                        <p>Actifs</p>
+                        <p>En ligne</p>
                     </div>
                     <div class="stat-card">
                         <h3 id="inactive-sensors">0</h3>
-                        <p>Inactifs</p>
+                        <p>Hors ligne</p>
                     </div>
                 </div>
                 
-                <div id="sensors-list" class="sensors-list">
-                    <!-- Liste des capteurs chargée dynamiquement -->
-                    <div class="loading-message">Chargement des capteurs...</div>
-                </div>
-                
-                <div id="sensor-realtime" class="sensor-realtime">
-                    <h3>État en temps réel</h3>
-                    <div id="realtime-data" class="realtime-data">
-                        <p>Sélectionnez un capteur pour voir son état en temps réel</p>
+                <!-- Filtres -->
+                <div class="sensors-filters">
+                    <div class="filter-group">
+                        <label for="filter-type">Type de capteur:</label>
+                        <select id="filter-type">
+                            <option value="all">Tous les types</option>
+                            <option value="temperature">🌡️ Température</option>
+                            <option value="humidity">💧 Humidité</option>
+                            <option value="co2">🌫️ CO2</option>
+                            <option value="noise">🔊 Son</option>
+                            <option value="light">💡 Luminosité</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-status">Statut:</label>
+                        <select id="filter-status">
+                            <option value="all">Tous</option>
+                            <option value="active">En ligne</option>
+                            <option value="inactive">Hors ligne</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-experiment">Expérience:</label>
+                        <input type="text" id="filter-experiment" placeholder="Rechercher par ID...">
                     </div>
                 </div>
                 
-                <div id="sensor-history" class="sensor-history">
-                    <h3>Historique</h3>
-                    <div id="history-chart" class="history-chart">
-                        <canvas id="sensor-chart"></canvas>
+                <!-- Liste des capteurs -->
+                <div id="sensors-list" class="sensors-grid">
+                    <div class="loading-message">⏳ Chargement des capteurs...</div>
+                </div>
+                
+                <!-- Panneau de détails -->
+                <div id="sensor-details" class="sensor-details hidden">
+                    <div class="details-header">
+                        <h3 id="sensor-detail-title">Détails du capteur</h3>
+                        <button class="btn-close" id="close-sensor-details">✕</button>
+                    </div>
+                    <div id="sensor-detail-content" class="details-content">
+                        <!-- Contenu chargé dynamiquement -->
                     </div>
                 </div>
             </div>

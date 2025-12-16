@@ -15,14 +15,24 @@ function generateExperiments(count = 5) {
   const clusterIds = Object.keys(CLUSTERS).map(Number);
   const protocolIds = Object.keys(PROTOCOLS);
 
+  // Coordonnées GPS réelles des villes [Longitude, Latitude]
+  const cityCoordinates = {
+    'Aix-en-Provence': [5.447427, 43.529742],
+    'Marseille': [5.369780, 43.296482],
+    'Toulon': [5.928000, 43.124228],
+    'Nice': [7.265122, 43.710173],
+    'Avignon': [4.808204, 43.949317]
+  };
+
   return Array.from({ length: count }, (_, i) => {
     const clusterId = clusterIds[i % clusterIds.length];
     const protocolId = protocolIds[i % protocolIds.length];
+    const city = cities[i % cities.length];
     
     return {
       id: `exp-${String(i + 1).padStart(3, '0')}`,
       title: `${PROTOCOLS[protocolId].name} - ${schools[i % schools.length]}`,
-      city: cities[i % cities.length],
+      city: city,
       school: `Lycée ${schools[i % schools.length]}`,
       cluster_id: clusterId,
       // On dénormalise les infos utiles pour éviter les jointures plus tard
@@ -31,7 +41,7 @@ function generateExperiments(count = 5) {
       protocol_name: PROTOCOLS[protocolId].name,
       location: {
         type: 'Point', // Format GeoJSON standard pour MongoDB
-        coordinates: [5.4 + Math.random() * 0.2, 43.3 + Math.random() * 0.2] // Longitude, Latitude
+        coordinates: cityCoordinates[city] // [Longitude, Latitude]
       },
       status: 'active',
       date: new Date().toISOString().split('T')[0],
