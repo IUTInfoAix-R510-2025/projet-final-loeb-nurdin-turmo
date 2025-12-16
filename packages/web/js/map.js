@@ -95,7 +95,7 @@ export async function refresh() {
     }, 100);
 
     try {
-        console.log('🔍 Chargement des expériences depuis:', API_ENDPOINTS.experiments);
+        console.log('Chargement des expériences depuis:', API_ENDPOINTS.experiments);
         const response = await fetch(API_ENDPOINTS.experiments);
         
         if (!response.ok) {
@@ -103,24 +103,24 @@ export async function refresh() {
         }
         
         const result = await response.json();
-        console.log('📦 Données reçues:', result);
+        console.log('Données reçues:', result);
         
         if (!result.success) {
             throw new Error(result.error || 'Erreur API inconnue');
         }
         
         allExperiments = result.data || [];
-        console.log(`📊 ${allExperiments.length} expérience(s) chargée(s)`);
+        console.log(`${allExperiments.length} expérience(s) chargée(s)`);
         
         if (allExperiments.length === 0) {
-            console.warn('⚠️ Aucune expérience trouvée. Avez-vous exécuté le script seed ?');
+            console.warn('Aucune expérience trouvée. Avez-vous exécuté le script seed ?');
             alert('Aucune expérience trouvée dans la base de données. Veuillez exécuter : npm run seed');
             return;
         }
         
         displayExperiments(allExperiments);
     } catch (error) {
-        console.error('❌ Erreur lors du chargement de la carte:', error);
+        console.error('Erreur lors du chargement de la carte:', error);
         alert(`Erreur de connexion à l'API: ${error.message}\n\nAssurez-vous que l'API est démarrée (npm run dev:api)`);
     }
 }
@@ -162,7 +162,7 @@ function displayExperiments(experiments) {
                 marker.bindPopup(`
                     <div style="min-width: 220px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
                         <strong style="font-size: 16px; color: #2c3e50;">${exp.title || 'Sans titre'}</strong><br>
-                        <span style="color: ${color}; font-weight: 600;">● ${clusterName}</span><br>
+                        <span style="color: ${color}; font-weight: 600;">${clusterName}</span><br>
                         <span style="color: #7f8c8d; font-size: 13px;">${exp.school || ''} ${exp.city ? '- ' + exp.city : ''}</span><br>
                         <button onclick="window.location.hash='experiments/${exp.id || exp._id}'" 
                                 style="margin-top: 10px; padding: 8px 16px; background: linear-gradient(135deg, ${color}, ${adjustColor(color, -20)}); 
@@ -170,7 +170,7 @@ function displayExperiments(experiments) {
                                 font-size: 13px; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
                                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.2)';"
                                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';">
-                            📋 Voir détails
+                            Voir détails
                         </button>
                     </div>
                 `);

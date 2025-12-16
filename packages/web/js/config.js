@@ -14,11 +14,11 @@ export const API_ENDPOINTS = {
 
 // Clusters thématiques SteamCity
 export const CLUSTERS = {
-  1: { id: 1, label: 'Governance and citizenship', color: 'blue', icon: '🏛️' },
-  2: { id: 2, label: 'Environmental quality', color: 'green', icon: '🌿' },
-  3: { id: 3, label: 'Mobility', color: 'red', icon: '🚗' },
-  4: { id: 4, label: 'Energy savings', color: 'yellow', icon: '⚡' },
-  5: { id: 5, label: 'AI and technologies', color: 'purple', icon: '🤖' }
+  1: { id: 1, label: 'Governance and citizenship', color: 'blue', icon: '' },
+  2: { id: 2, label: 'Environmental quality', color: 'green', icon: '' },
+  3: { id: 3, label: 'Mobility', color: 'red', icon: '' },
+  4: { id: 4, label: 'Energy savings', color: 'yellow', icon: '' },
+  5: { id: 5, label: 'AI and technologies', color: 'purple', icon: '' }
 };
 
 // Protocoles expérimentaux SteamCity
@@ -51,16 +51,16 @@ export const PROTOCOLS = {
 
 // Types de capteurs supportés
 export const SENSOR_TYPES = {
-  temperature: { name: 'Température', icon: '🌡️', unit: '°C', range: [-40, 85], precision: 0.1 },
-  humidity: { name: 'Humidité', icon: '💧', unit: '%', range: [0, 100], precision: 0.5 },
-  co2: { name: 'CO2', icon: '🌬️', unit: 'ppm', range: [0, 10000], precision: 1 },
-  noise: { name: 'Niveau sonore', icon: '🔊', unit: 'dB', range: [0, 140], precision: 0.1 },
-  pm25: { name: 'PM2.5', icon: '🫁', unit: 'μg/m³', range: [0, 500], precision: 0.1 },
-  pm10: { name: 'PM10', icon: '🌫️', unit: 'μg/m³', range: [0, 1000], precision: 0.1 },
-  light: { name: 'Luminosité', icon: '💡', unit: 'lux', range: [0, 100000], precision: 1 },
-  pressure: { name: 'Pression', icon: '🌤️', unit: 'hPa', range: [800, 1200], precision: 0.1 },
-  motion: { name: 'Mouvement', icon: '🏃', unit: 'bool', type: 'boolean' },
-  door: { name: 'Ouverture', icon: '🚪', unit: 'bool', type: 'boolean' }
+  temperature: { name: 'Température', icon: '', unit: '°C', range: [-40, 85], precision: 0.1 },
+  humidity: { name: 'Humidité', icon: '', unit: '%', range: [0, 100], precision: 0.5 },
+  co2: { name: 'CO2', icon: '', unit: 'ppm', range: [0, 10000], precision: 1 },
+  noise: { name: 'Niveau sonore', icon: '', unit: 'dB', range: [0, 140], precision: 0.1 },
+  pm25: { name: 'PM2.5', icon: '', unit: 'μg/m³', range: [0, 500], precision: 0.1 },
+  pm10: { name: 'PM10', icon: '', unit: 'μg/m³', range: [0, 1000], precision: 0.1 },
+  light: { name: 'Luminosité', icon: '', unit: 'lux', range: [0, 100000], precision: 1 },
+  pressure: { name: 'Pression', icon: '', unit: 'hPa', range: [800, 1200], precision: 0.1 },
+  motion: { name: 'Mouvement', icon: '', unit: 'bool', type: 'boolean' },
+  door: { name: 'Ouverture', icon: '', unit: 'bool', type: 'boolean' }
 };
 
 // Statuts des capteurs

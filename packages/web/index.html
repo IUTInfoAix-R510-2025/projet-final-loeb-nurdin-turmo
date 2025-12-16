@@ -12,7 +12,7 @@
     <header class="main-header">
         <div class="header-container">
             <div class="logo-section">
-                <h1 class="app-title">🌍 SteamCity - Plateforme IoT</h1>
+                <h1 class="app-title">SteamCity - Plateforme IoT</h1>
             </div>
             <button id="theme-toggle" class="theme-toggle" title="Basculer le thème">
                 🌙
@@ -54,8 +54,8 @@
             <div class="section-header">
                 <h2>Carte Interactive des Expériences</h2>
                 <div class="section-controls">
-                    <button class="btn btn-primary" id="refresh-map">🔄 Actualiser</button>
-                    <button class="btn btn-secondary" id="toggle-filters">🔍 Filtres</button>
+                    <button class="btn btn-primary" id="refresh-map">Actualiser</button>
+                    <button class="btn btn-secondary" id="toggle-filters">Filtres</button>
                 </div>
             </div>
             
@@ -106,7 +106,7 @@
                 <h2>Liste des Expériences</h2>
                 <div class="section-controls">
                     <button class="btn btn-primary" id="new-experiment">➕ Nouvelle Expérience</button>
-                    <button class="btn btn-secondary" id="refresh-experiments">🔄 Actualiser</button>
+                    <button class="btn btn-secondary" id="refresh-experiments">Actualiser</button>
                 </div>
             </div>
             
@@ -114,7 +114,7 @@
                 <div class="experiments-filters">
                     <div class="search-bar">
                         <input type="text" id="search-experiments" placeholder="Rechercher par nom, ville ou école...">
-                        <button class="btn-search">🔍</button>
+                        <button class="btn-search">Recherche</button>
                     </div>
                     
                     <div class="filter-clusters">
@@ -150,7 +150,7 @@
                 <div id="experiment-details" class="experiment-details hidden">
                     <div class="details-header">
                         <h3 id="detail-title">Détails de l'expérience</h3>
-                        <button class="btn-close" id="close-details">✕</button>
+                        <button class="btn-close" id="close-details">×</button>
                     </div>
                     <div id="detail-content" class="details-content">
                         <!-- Détails chargés dynamiquement -->
@@ -168,9 +168,9 @@
         <!-- Zone de contenu: Capteurs -->
         <section id="sensors-view" class="content-section">
             <div class="section-header">
-                <h2>📡 Inventaire des Capteurs</h2>
+                <h2>Inventaire des Capteurs</h2>
                 <div class="section-controls">
-                    <button class="btn btn-secondary" id="refresh-sensors">🔄 Actualiser</button>
+                    <button class="btn btn-secondary" id="refresh-sensors">Actualiser</button>
                 </div>
             </div>
             
@@ -197,11 +197,11 @@
                         <label for="filter-type">Type de capteur:</label>
                         <select id="filter-type">
                             <option value="all">Tous les types</option>
-                            <option value="temperature">🌡️ Température</option>
-                            <option value="humidity">💧 Humidité</option>
-                            <option value="co2">🌫️ CO2</option>
-                            <option value="noise">🔊 Son</option>
-                            <option value="light">💡 Luminosité</option>
+                            <option value="temperature">Température</option>
+                            <option value="humidity">Humidité</option>
+                            <option value="co2">CO2</option>
+                            <option value="noise">Son</option>
+                            <option value="light">Luminosité</option>
                         </select>
                     </div>
                     <div class="filter-group">
@@ -221,14 +221,14 @@
                 
                 <!-- Liste des capteurs -->
                 <div id="sensors-list" class="sensors-grid">
-                    <div class="loading-message">⏳ Chargement des capteurs...</div>
+                    <div class="loading-message">Chargement des capteurs...</div>
                 </div>
                 
                 <!-- Panneau de détails -->
                 <div id="sensor-details" class="sensor-details hidden">
                     <div class="details-header">
                         <h3 id="sensor-detail-title">Détails du capteur</h3>
-                        <button class="btn-close" id="close-sensor-details">✕</button>
+                        <button class="btn-close" id="close-sensor-details">×</button>
                     </div>
                     <div id="sensor-detail-content" class="details-content">
                         <!-- Contenu chargé dynamiquement -->
@@ -240,9 +240,9 @@
         <!-- Zone de contenu: Données -->
         <section id="data-view" class="content-section">
             <div class="section-header">
-                <h2>📊 Données / Analyse</h2>
+                <h2>Données / Analyse</h2>
                 <div class="section-controls">
-                    <button class="btn btn-primary" id="refresh-data">🔄 Actualiser</button>
+                    <button class="btn btn-primary" id="refresh-data">Actualiser</button>
                 </div>
             </div>
             
@@ -250,7 +250,7 @@
                 <!-- Sélection de l'expérience -->
                 <div class="data-selection-panel">
                     <div class="filter-group">
-                        <label for="experiment-select">1️⃣ Sélectionner une expérience:</label>
+                        <label for="experiment-select">1. Sélectionner une expérience:</label>
                         <select id="experiment-select" class="data-select">
                             <option value="">-- Choisir une expérience --</option>
                         </select>
@@ -263,7 +263,7 @@
                     
                     <!-- Période d'analyse -->
                     <div class="period-selection">
-                        <label>2️⃣ Période d'analyse:</label>
+                        <label>2. Période d'analyse:</label>
                         <div class="period-buttons">
                             <button class="data-period-btn active" data-period="24h">24h</button>
                             <button class="data-period-btn" data-period="7d">7 jours</button>
@@ -275,13 +275,13 @@
                     <!-- Boutons d'action -->
                     <div class="action-buttons">
                         <button class="btn btn-primary" id="compare-btn" disabled>
-                            📈 Comparer les données
+                            Comparer les données
                         </button>
-                        <button class="btn btn-secondary" id="export-csv-btn" disabled>
-                            📥 Exporter CSV
+                        <button class="btn btn-secondary" id="export-csv-btn">
+                            Exporter CSV
                         </button>
-                        <button class="btn btn-secondary" id="export-json-btn" disabled>
-                            📥 Exporter JSON
+                        <button class="btn btn-secondary" id="export-json-btn">
+                            Exporter JSON
                         </button>
                     </div>
                 </div>
@@ -290,7 +290,7 @@
                 <div id="comparison-results" class="comparison-results">
                     <!-- Graphique comparatif -->
                     <div class="chart-container comparison-chart">
-                        <h3>📈 Graphique comparatif</h3>
+                        <h3>Graphique comparatif</h3>
                         <canvas id="comparison-chart"></canvas>
                     </div>
                 </div>

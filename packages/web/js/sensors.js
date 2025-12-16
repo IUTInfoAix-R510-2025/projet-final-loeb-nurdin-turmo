@@ -62,7 +62,7 @@ export async function refresh() {
     const container = document.getElementById('sensors-list');
     if (!container) return;
 
-    container.innerHTML = '<div class="loading-message">⏳ Chargement des capteurs...</div>';
+    container.innerHTML = '<div class="loading-message">Chargement des capteurs...</div>';
 
     try {
         const response = await fetch(API_ENDPOINTS.sensors);
@@ -78,15 +78,15 @@ export async function refresh() {
         }
         
         allSensors = result.data || [];
-        console.log(`📊 ${allSensors.length} capteur(s) chargé(s)`);
+        console.log(`${allSensors.length} capteur(s) chargé(s)`);
         
         applyFilters();
         updateStats(allSensors);
     } catch (error) {
-        console.error('❌ Erreur chargement capteurs:', error);
+        console.error('Erreur chargement capteurs:', error);
         container.innerHTML = `
             <div class="no-data error">
-                ❌ Erreur de chargement: ${error.message}<br>
+                Erreur de chargement: ${error.message}<br>
                 Assurez-vous que l'API est démarrée.
             </div>
         `;
@@ -133,14 +133,14 @@ function renderSensors(sensors) {
     const container = document.getElementById('sensors-list');
     
     if (sensors.length === 0) {
-        container.innerHTML = '<div class="no-data">📡 Aucun capteur trouvé avec ces filtres.</div>';
+        container.innerHTML = '<div class="no-data">Aucun capteur trouvé avec ces filtres.</div>';
         return;
     }
     
     container.innerHTML = sensors.map(sensor => {
         const statusColor = getStatusColor(sensor.status);
         const statusIcon = getStatusIcon(sensor.status);
-        const typeInfo = SENSOR_TYPES[sensor.sensor_type_id] || { name: sensor.sensor_type_id, unit: '', icon: '📊' };
+        const typeInfo = SENSOR_TYPES[sensor.sensor_type_id] || { name: sensor.sensor_type_id, unit: '', icon: '' };
         
         // Formater la localisation
         let locationText = 'Non défini';
@@ -156,7 +156,7 @@ function renderSensors(sensors) {
             <div class="sensor-card" onclick="window.showSensorDetails('${sensor.id || sensor._id}')">
                 <div class="sensor-card-header">
                     <div class="sensor-type">
-                        <span class="sensor-icon">${typeInfo.icon || '📊'}</span>
+                        <span class="sensor-icon">${typeInfo.icon || ''}</span>
                         <div>
                             <h4>${typeInfo.name || sensor.sensor_type_id}</h4>
                             <small>${sensor.id || sensor._id}</small>
@@ -170,13 +170,13 @@ function renderSensors(sensors) {
                 </div>
                 <div class="sensor-card-body">
                     <div class="sensor-info-row">
-                        <span>📍 ${locationText}</span>
+                        <span>Localisation: ${locationText}</span>
                     </div>
                     <div class="sensor-info-row">
-                        <span>🔬 ${sensor.experiment_id || 'Aucune expérience'}</span>
+                        <span>Expérience: ${sensor.experiment_id || 'Aucune'}</span>
                     </div>
                     <div class="sensor-info-row">
-                        <span>📛 ${sensor.name || 'Sans nom'}</span>
+                        <span>Nom: ${sensor.name || 'Sans nom'}</span>
                     </div>
                 </div>
             </div>
@@ -222,13 +222,13 @@ function getStatusColor(status) {
  */
 function getStatusIcon(status) {
     const icons = {
-        'online': '●',
-        'active': '●',
-        'offline': '✕',
-        'inactive': '○',
-        'maintenance': '⚠'
+        'online': '',
+        'active': '',
+        'offline': '',
+        'inactive': '',
+        'maintenance': ''
     };
-    return icons[status] || '?';
+    return icons[status] || '';
 }
 
 /**
@@ -243,7 +243,7 @@ async function showSensorDetails(sensor) {
     // Afficher le panneau
     detailsPanel.classList.remove('hidden');
     
-    const typeInfo = SENSOR_TYPES[sensor.sensor_type_id] || { name: sensor.sensor_type_id, unit: '', icon: '📊' };
+    const typeInfo = SENSOR_TYPES[sensor.sensor_type_id] || { name: sensor.sensor_type_id, unit: '', icon: '' };
     const statusColor = getStatusColor(sensor.status);
     
     // Formater la localisation
@@ -295,7 +295,7 @@ async function showSensorDetails(sensor) {
         
         <div class="measurements-section">
             <div class="measurements-header">
-                <h4>📈 Historique des mesures</h4>
+                <h4>Historique des mesures</h4>
                 <div class="period-selector">
                     <button class="period-btn active" data-period="24h">24h</button>
                     <button class="period-btn" data-period="7d">7 jours</button>

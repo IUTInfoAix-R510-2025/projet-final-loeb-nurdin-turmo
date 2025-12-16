@@ -50,7 +50,7 @@ async function loadExperiments() {
             renderExperimentSelect();
         }
     } catch (error) {
-        console.error('❌ Erreur chargement expériences:', error);
+        console.error('Erreur chargement expériences:', error);
         showError('Impossible de charger les expériences');
     }
 }
@@ -101,7 +101,7 @@ async function loadSensorsForExperiment(experimentId) {
             renderSensorsSelection();
         }
     } catch (error) {
-        console.error('❌ Erreur chargement capteurs:', error);
+        console.error('Erreur chargement capteurs:', error);
         showError('Impossible de charger les capteurs');
     }
 }
@@ -175,7 +175,7 @@ async function compareData() {
     }
     
     const container = document.getElementById('comparison-results');
-    container.innerHTML = '<div class="loading-message">⏳ Chargement des données...</div>';
+    container.innerHTML = '<div class="loading-message">Chargement des données...</div>';
     
     try {
         // Calculer les dates selon la période
@@ -185,11 +185,11 @@ async function compareData() {
         const datasets = [];
         const allMeasurements = [];
         
-        console.log('📊 Chargement des mesures pour', selectedSensors.length, 'capteur(s)', dates);
+        console.log('Chargement des mesures pour', selectedSensors.length, 'capteur(s)', dates);
         
         for (const sensorId of selectedSensors) {
             const sensor = allSensors.find(s => s.id === sensorId);
-            const typeInfo = SENSOR_TYPES[sensor?.sensor_type_id] || { name: 'Inconnu', unit: '' };
+            const typeInfo = SENSOR_TYPES[sensor?.sensor_type_id] || { name: 'Inconnu', unit: '', icon: '' };
             
             const response = await fetch(
                 `${API_ENDPOINTS.measurements}?sensor_id=${sensorId}&start_date=${dates.start}&end_date=${dates.end}&limit=500`
@@ -211,7 +211,7 @@ async function compareData() {
                 // Préparer le dataset pour Chart.js
                 const color = getColorForIndex(datasets.length);
                 datasets.push({
-                    label: `${typeInfo.icon} ${sensor.name || sensorId}`,
+                    label: `${sensor.name || sensorId}`,
                     data: measurements.map(m => ({
                         x: new Date(m.timestamp),
                         y: m.value
@@ -229,7 +229,7 @@ async function compareData() {
             return;
         }
         
-        console.log('✅ Données chargées:', datasets.length, 'séries');
+        console.log('Données chargées:', datasets.length, 'séries');
         
         // Sauvegarder pour l'export
         currentMeasurements = allMeasurements;
@@ -237,7 +237,7 @@ async function compareData() {
         // Créer la structure HTML pour le graphique
         container.innerHTML = `
             <div class="chart-container comparison-chart">
-                <h3>📈 Graphique comparatif</h3>
+                <h3>Graphique comparatif</h3>
                 <canvas id="comparison-chart"></canvas>
             </div>
         `;
@@ -253,8 +253,8 @@ async function compareData() {
         document.getElementById('export-json-btn').disabled = false;
         
     } catch (error) {
-        console.error('❌ Erreur comparaison:', error);
-        container.innerHTML = `<div class="no-data error">❌ Erreur: ${error.message}</div>`;
+        console.error('Erreur comparaison:', error);
+        container.innerHTML = `<div class="no-data error">Erreur: ${error.message}</div>`;
     }
 }
 
@@ -329,7 +329,7 @@ function renderStatistics(allMeasurements) {
     if (!container) return;
     
     container.innerHTML = `
-        <h3>📊 Statistiques</h3>
+        <h3>Statistiques</h3>
         <div class="stats-grid">
             ${allMeasurements.map(({ sensor, measurements, typeInfo }) => {
                 const values = measurements.map(m => m.value);
@@ -337,7 +337,7 @@ function renderStatistics(allMeasurements) {
                 
                 return `
                     <div class="stat-card">
-                        <h4>${typeInfo.icon} ${sensor.name || sensor.id}</h4>
+                        <h4>${sensor.name || sensor.id}</h4>
                         <div class="stat-rows">
                             <div class="stat-row">
                                 <span class="stat-label">Mesures:</span>
@@ -417,7 +417,7 @@ async function exportData(format) {
         }
         
     } catch (error) {
-        console.error('❌ Erreur export:', error);
+        console.error('Erreur export:', error);
         showError('Erreur lors de l\'export des données');
     }
 }
@@ -521,7 +521,7 @@ function clearComparison() {
 function showError(message) {
     const container = document.getElementById('comparison-results');
     if (container) {
-        container.innerHTML = `<div class="no-data error">❌ ${message}</div>`;
+        container.innerHTML = `<div class="no-data error">${message}</div>`;
     }
 }
 

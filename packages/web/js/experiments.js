@@ -67,10 +67,10 @@ export async function refresh(experimentId = null) {
     const container = document.getElementById('experiments-list');
     if (!container) return;
 
-    container.innerHTML = '<div class="loading-message">⏳ Chargement des expériences...</div>';
+    container.innerHTML = '<div class="loading-message">Chargement des expériences...</div>';
 
     try {
-        console.log('🔍 Chargement des expériences depuis:', API_ENDPOINTS.experiments);
+        console.log('Chargement des expériences depuis:', API_ENDPOINTS.experiments);
         const response = await fetch(API_ENDPOINTS.experiments);
         
         if (!response.ok) {
@@ -78,19 +78,19 @@ export async function refresh(experimentId = null) {
         }
         
         const result = await response.json();
-        console.log('📦 Données reçues:', result);
+        console.log('Données reçues:', result);
         
         if (!result.success) {
             throw new Error(result.error || 'Erreur API inconnue');
         }
         
         allExperiments = result.data || [];
-        console.log(`📊 ${allExperiments.length} expérience(s) chargée(s)`);
+        console.log(`${allExperiments.length} expérience(s) chargée(s)`);
         
         if (allExperiments.length === 0) {
             container.innerHTML = `
                 <div class="no-data error">
-                    ⚠️ Aucune expérience trouvée dans la base de données.<br><br>
+                    Aucune expérience trouvée dans la base de données.<br><br>
                     Veuillez exécuter le script seed :<br>
                     <code>npm run seed</code>
                 </div>
@@ -110,10 +110,10 @@ export async function refresh(experimentId = null) {
             }, 100);
         }
     } catch (error) {
-        console.error('❌ Erreur chargement expériences:', error);
+        console.error('Erreur chargement expériences:', error);
         container.innerHTML = `
             <div class="no-data error">
-                ❌ Erreur de connexion à l'API<br>
+                Erreur de connexion à l'API<br>
                 <strong>${error.message}</strong><br><br>
                 Assurez-vous que l'API est démarrée :<br>
                 <code>npm run dev:api</code><br><br>
@@ -193,11 +193,11 @@ function renderExperiments(experiments) {
                 ${clusterInfo.icon} ${clusterInfo.label}
             </div>` : ''}
             <p class="experiment-description">${exp.description || 'Pas de description'}</p>
-            ${exp.school ? `<p class="experiment-school">🏫 ${exp.school}</p>` : ''}
-            ${exp.city ? `<p class="experiment-city">📍 ${exp.city}</p>` : ''}
-            ${exp.protocol_name || exp.protocol ? `<p class="experiment-protocol">🔬 ${exp.protocol_name || exp.protocol}</p>` : ''}
+            ${exp.school ? `<p class="experiment-school">École: ${exp.school}</p>` : ''}
+            ${exp.city ? `<p class="experiment-city">Ville: ${exp.city}</p>` : ''}
+            ${exp.protocol_name || exp.protocol ? `<p class="experiment-protocol">Protocole: ${exp.protocol_name || exp.protocol}</p>` : ''}
             <div class="experiment-meta">
-                <small>📅 ${new Date(exp.created_at || exp.createdAt || Date.now()).toLocaleDateString()}</small>
+                <small>Date: ${new Date(exp.created_at || exp.createdAt || Date.now()).toLocaleDateString()}</small>
             </div>
         `;
         card.addEventListener('click', () => showDetails(exp));
@@ -278,10 +278,10 @@ async function showDetails(exp) {
     content.innerHTML = `
         <div class="detail-section">
             <p><strong>Statut:</strong> <span class="experiment-status status-${exp.status}">${getStatusLabel(exp.status)}</span></p>
-            ${clusterInfo ? `<p><strong>Cluster:</strong> <span style="color: ${clusterColor};">${clusterInfo.icon} ${clusterInfo.label}</span></p>` : ''}
-            ${exp.protocol_name || exp.protocol ? `<p><strong>Protocole:</strong> 🔬 ${exp.protocol_name || exp.protocol}</p>` : ''}
-            ${exp.school ? `<p><strong>École:</strong> 🏫 ${exp.school}</p>` : ''}
-            ${exp.city ? `<p><strong>Ville:</strong> 📍 ${exp.city}</p>` : ''}
+            ${clusterInfo ? `<p><strong>Cluster:</strong> <span style="color: ${clusterColor};">${clusterInfo.label}</span></p>` : ''}
+            ${exp.protocol_name || exp.protocol ? `<p><strong>Protocole:</strong> ${exp.protocol_name || exp.protocol}</p>` : ''}
+            ${exp.school ? `<p><strong>École:</strong> ${exp.school}</p>` : ''}
+            ${exp.city ? `<p><strong>Ville:</strong> ${exp.city}</p>` : ''}
             <p><strong>Description:</strong></p>
             <p class="detail-description">${exp.description || 'Pas de description'}</p>
             ${exp.methodology ? `<p><strong>Méthodologie:</strong></p><p class="detail-methodology">${exp.methodology}</p>` : ''}
@@ -300,7 +300,7 @@ async function showDetails(exp) {
  * Charge et affiche les capteurs associés à une expérience
  */
 async function loadAssociatedSensors(experimentId, container) {
-    container.innerHTML = '<p class="loading-message">⏳ Chargement des capteurs...</p>';
+    container.innerHTML = '<p class="loading-message">Chargement des capteurs...</p>';
     
     try {
         // Appel à l'API pour récupérer les capteurs
@@ -330,12 +330,12 @@ async function loadAssociatedSensors(experimentId, container) {
                     renderAssociatedSensors(sensors, container);
                 }
             } else {
-                container.innerHTML = '<p class="no-data error">❌ Erreur lors du chargement des capteurs.</p>';
+                container.innerHTML = '<p class="no-data error">Erreur lors du chargement des capteurs.</p>';
             }
         }
     } catch (error) {
         console.error('Erreur lors du chargement des capteurs:', error);
-        container.innerHTML = `<p class="no-data error">❌ Erreur: ${error.message}</p>`;
+        container.innerHTML = `<p class="no-data error">Erreur: ${error.message}</p>`;
     }
 }
 
@@ -360,16 +360,16 @@ function renderAssociatedSensors(sensors, container) {
         
         sensorCard.innerHTML = `
             <div class="sensor-card-header">
-                <span class="sensor-icon">${sensorType?.icon || '📡'}</span>
+                <span class="sensor-icon">${sensorType?.icon || ''}</span>
                 <h4 class="sensor-name">${sensor.name || sensor.id}</h4>
             </div>
             <div class="sensor-card-body">
                 <p class="sensor-type"><strong>Type:</strong> ${sensorType?.name || sensor.type || sensor.sensor_type_id}</p>
                 <p class="sensor-status">
                     <strong>Statut:</strong> 
-                    <span style="color: ${statusColor};">● ${getSensorStatusLabel(sensor.status)}</span>
+                    <span style="color: ${statusColor};">${getSensorStatusLabel(sensor.status)}</span>
                 </p>
-                ${sensor.location ? `<p class="sensor-location">📍 ${typeof sensor.location === 'string' ? sensor.location : sensor.location.building || sensor.location.room || 'Non spécifié'}</p>` : ''}
+                ${sensor.location ? `<p class="sensor-location">Localisation: ${typeof sensor.location === 'string' ? sensor.location : sensor.location.building || sensor.location.room || 'Non spécifié'}</p>` : ''}
                 ${sensor.last_reading ? `
                     <p class="sensor-reading">
                         <strong>Dernière mesure:</strong> 
