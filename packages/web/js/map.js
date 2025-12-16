@@ -105,41 +105,83 @@ function displayExperiments(experiments) {
         markersLayer[clusterId].clearLayers();
     }
 
+    let validMarkersCount = 0;
+
     experiments.forEach(exp => {
         if (exp.location && exp.location.coordinates) {
+            // GeoJSON utilise [longitude, latitude]
+            // Leaflet utilise [latitude, longitude]
             const [lng, lat] = exp.location.coordinates;
             
-            // Déterminer la couleur selon le cluster
-            const clusterId = exp.cluster_id || 1;
-            const color = CLUSTER_COLORS[clusterId] || '#95a5a6';
-            const clusterName = CLUSTERS[clusterId]?.label || 'Unknown';
+            // Vérifier que les coordonnées sont valides
+            if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+                // Déterminer la couleur selon le cluster
+                const clusterId = exp.cluster_id || 1;
+                const color = CLUSTER_COLORS[clusterId] || '#95a5a6';
+                const clusterName = CLUSTERS[clusterId]?.label || 'Unknown';
 
-            const marker = L.circleMarker([lat, lng], {
-                radius: 8,
-                fillColor: color,
-                color: '#fff',
-                weight: 2,
-                opacity: 1,
-                fillOpacity: 0.8
-            });
+                // CORRECTION: Inverser lat/lng pour Leaflet
+                const marker = L.circleMarker([lat, lng], {
+                    radius: 8,
+                    fillColor: color,
+                    color: '#fff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                });
 
-            marker.bindPopup(`
-                <div style="min-width: 200px;">
-                    <strong>${exp.title || 'Sans titre'}</strong><br>
-                    <span style="color: ${color};">● ${clusterName}</span><br>
-                    ${exp.school || ''} ${exp.city ? '- ' + exp.city : ''}<br>
-                    <button onclick="window.location.hash='experiments/${exp.id || exp._id}'">
-                        Voir détails
-                    </button>
-                </div>
-            `);
+                marker.bindPopup(`
+                    <div style="min-width: 200px;">
+                        <strong>${exp.title || 'Sans titre'}</strong><br>
+                        <span style="color: ${color};">● ${clusterName}</span><br>
+                        ${exp.school || ''} ${exp.city ? '- ' + exp.city : ''}<br>
+                        <button onclick="window.location.hash='experiments/${exp.id || exp._id}'">
+                            Voir détails
+                        </button>
+                    </div>
+                `);
 
-            // Ajouter au layer du cluster correspondant
-            if (markersLayer[clusterId]) {
-                markersLayer[clusterId].addLayer(marker);
+                // Ajouter au layer du cluster correspondant
+                if (markersLayer[clusterId]) {
+                    markersLayer[clusterId].addLayer(marker);
+                    validMarkersCount++;
+                }
+            } else {
+                console.warn(`Coordonnées invalides pour l'expérience "${exp.title}":`, lat, lng);
             }
+        } else {
+            console.warn(`Pas de coordonnées pour l'expérience "${exp.title || exp.id}"`);
         }
     });
+
+    console.log(`${validMarkersCount} marqueur(s) affiché(s) sur ${experiments.length} expérience(s)`);
+
+    // Ajuster la vue de la carte pour afficher tous les marqueurs
+    if (validMarkersCount > 0) {
+        adjustMapBounds();
+    }
+}
+
+/**
+ * Ajuste la vue de la carte pour afficher tous les marqueurs visibles
+ */
+function adjustMapBounds() {
+    const allMarkers = [];
+    
+    // Collecter tous les marqueurs visibles
+    for (let clusterId in markersLayer) {
+        if (map.hasLayer(markersLayer[clusterId])) {
+            markersLayer[clusterId].eachLayer(marker => {
+                allMarkers.push(marker.getLatLng());
+            });
+        }
+    }
+    
+    // Si on a des marqueurs, ajuster la vue
+    if (allMarkers.length > 0) {
+        const group = L.featureGroup(Object.values(markersLayer).filter(layer => map.hasLayer(layer)));
+        map.fitBounds(group.getBounds().pad(0.1));
+    }
 }
 
 /**
@@ -148,39 +190,45 @@ function displayExperiments(experiments) {
 function displayDemoData() {
     const demoExperiments = [
         {
+            id: 'demo-1',
             title: "Qualité de l'air - Centre Ville",
             cluster_id: 2,
             school: "Lycée Victor Hugo",
             city: "Aix-en-Provence",
+            // Format GeoJSON: [longitude, latitude]
             location: { coordinates: [5.447427, 43.529742] }
         },
         {
+            id: 'demo-2',
             title: "Bruit - Campus",
             cluster_id: 2,
             school: "Collège Marie Curie",
             city: "Marseille",
-            location: { coordinates: [5.439, 43.525] }
+            location: { coordinates: [5.379600, 43.296482] }
         },
         {
+            id: 'demo-3',
             title: "Mobilité urbaine",
             cluster_id: 3,
             school: "Lycée Thiers",
             city: "Marseille",
-            location: { coordinates: [5.452, 43.526] }
+            location: { coordinates: [5.381800, 43.298000] }
         },
         {
+            id: 'demo-4',
             title: "Consommation énergétique",
             cluster_id: 4,
             school: "École Jules Ferry",
             city: "Aix-en-Provence",
-            location: { coordinates: [5.445, 43.532] }
+            location: { coordinates: [5.445000, 43.532000] }
         },
         {
+            id: 'demo-5',
             title: "IA et reconnaissance d'images",
             cluster_id: 5,
             school: "Lycée Vauvenargues",
             city: "Aix-en-Provence",
-            location: { coordinates: [5.450, 43.528] }
+            location: { coordinates: [5.450000, 43.528000] }
         }
     ];
     allExperiments = demoExperiments;
