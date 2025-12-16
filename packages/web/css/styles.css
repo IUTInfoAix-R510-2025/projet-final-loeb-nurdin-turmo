@@ -448,70 +448,225 @@ body {
     margin-left: 10px;
 }
 
-/* Données */
+/* Données / Analyse */
 .data-container {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
-}
-
-.data-filters {
-    background-color: var(--white);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: var(--shadow);
     display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    align-items: flex-end;
+    flex-direction: column;
+    gap: 25px;
 }
 
-.data-visualizations {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 20px;
-}
-
-.chart-container {
+.data-selection-panel {
     background-color: var(--white);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-    height: 300px;
-}
-
-.statistics-panel {
-    background-color: var(--white);
-    padding: 20px;
+    padding: 25px;
     border-radius: 8px;
     box-shadow: var(--shadow);
 }
 
-.statistics-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 20px;
-    margin-top: 15px;
+.data-selection-panel .filter-group {
+    margin-bottom: 20px;
 }
 
-.stat-item {
-    text-align: center;
+.data-selection-panel label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.data-select {
+    width: 100%;
+    max-width: 500px;
     padding: 10px;
-    background-color: var(--light-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: var(--white);
+    transition: border-color 0.3s;
+}
+
+.data-select:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+}
+
+.sensors-selection {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    min-height: 50px;
+}
+
+.sensors-selection h4 {
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.sensors-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 12px;
+}
+
+.sensor-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.sensor-checkbox-item:hover {
+    border-color: var(--secondary-color);
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+}
+
+.sensor-checkbox-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.sensor-checkbox-item label {
+    flex: 1;
+    cursor: pointer;
+    margin: 0;
+    font-weight: normal;
+    font-size: 0.95rem;
+}
+
+.period-selection {
+    margin: 20px 0;
+}
+
+.period-selection label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.period-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.data-period-btn {
+    padding: 10px 20px;
+    border: 2px solid var(--secondary-color);
+    background-color: var(--white);
+    color: var(--secondary-color);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.data-period-btn:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+    transform: translateY(-2px);
+}
+
+.data-period-btn.active {
+    background-color: var(--secondary-color);
+    color: var(--white);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border-color);
+    flex-wrap: wrap;
+}
+
+.comparison-results {
+    min-height: 100px;
+}
+
+.comparison-chart {
+    background-color: var(--white);
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    height: 500px;
+}
+
+.comparison-chart h3 {
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+
+.comparison-chart canvas {
+    max-height: 430px;
+}
+
+.statistics-summary {
+    background-color: var(--white);
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    margin-top: 20px;
+}
+
+.statistics-summary h3 {
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.stat-card h4 {
+    margin-bottom: 15px;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 8px;
+}
+
+.stat-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background-color: rgba(255, 255, 255, 0.7);
     border-radius: 4px;
 }
 
 .stat-label {
-    display: block;
-    font-size: 0.85rem;
-    color: var(--text-light);
-    margin-bottom: 5px;
+    font-weight: 600;
+    color: var(--text-color);
 }
 
 .stat-value {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--primary-color);
+    font-weight: 700;
+    color: var(--secondary-color);
+    font-size: 1.05rem;
 }
 
 .data-table {
