@@ -63,21 +63,49 @@ export async function refresh() {
     const container = document.getElementById('experiments-list');
     if (!container) return;
 
-    container.innerHTML = '<div class="loading-message">Chargement des expériences...</div>';
+    container.innerHTML = '<div class="loading-message">⏳ Chargement des expériences...</div>';
 
     try {
+        console.log('🔍 Chargement des expériences depuis:', API_ENDPOINTS.experiments);
         const response = await fetch(API_ENDPOINTS.experiments);
-        if (response.ok) {
-            const result = await response.json();
-            allExperiments = result.data || result;
-            applyFilters(); // Appliquer les filtres actuels
-        } else {
-            // Demo data
-            renderDemoData();
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
+        
+        const result = await response.json();
+        console.log('📦 Données reçues:', result);
+        
+        if (!result.success) {
+            throw new Error(result.error || 'Erreur API inconnue');
+        }
+        
+        allExperiments = result.data || [];
+        console.log(`📊 ${allExperiments.length} expérience(s) chargée(s)`);
+        
+        if (allExperiments.length === 0) {
+            container.innerHTML = `
+                <div class="no-data error">
+                    ⚠️ Aucune expérience trouvée dans la base de données.<br><br>
+                    Veuillez exécuter le script seed :<br>
+                    <code>npm run seed</code>
+                </div>
+            `;
+            return;
+        }
+        
+        applyFilters(); // Appliquer les filtres actuels
     } catch (error) {
-        console.error('Erreur chargement expériences:', error);
-        renderDemoData();
+        console.error('❌ Erreur chargement expériences:', error);
+        container.innerHTML = `
+            <div class="no-data error">
+                ❌ Erreur de connexion à l'API<br>
+                <strong>${error.message}</strong><br><br>
+                Assurez-vous que l'API est démarrée :<br>
+                <code>npm run dev:api</code><br><br>
+                Et que le fichier .env est configuré correctement.
+            </div>
+        `;
     }
 }
 
@@ -153,9 +181,9 @@ function renderExperiments(experiments) {
             <p class="experiment-description">${exp.description || 'Pas de description'}</p>
             ${exp.school ? `<p class="experiment-school">🏫 ${exp.school}</p>` : ''}
             ${exp.city ? `<p class="experiment-city">📍 ${exp.city}</p>` : ''}
-            ${exp.protocol ? `<p class="experiment-protocol">🔬 ${exp.protocol}</p>` : ''}
+            ${exp.protocol_name || exp.protocol ? `<p class="experiment-protocol">🔬 ${exp.protocol_name || exp.protocol}</p>` : ''}
             <div class="experiment-meta">
-                <small>📅 ${new Date(exp.createdAt || Date.now()).toLocaleDateString()}</small>
+                <small>📅 ${new Date(exp.created_at || exp.createdAt || Date.now()).toLocaleDateString()}</small>
             </div>
         `;
         card.addEventListener('click', () => showDetails(exp));
@@ -175,73 +203,6 @@ function getClusterColor(clusterId) {
         5: '#9b59b6'  // Purple - AI & Tech
     };
     return colors[clusterId] || '#95a5a6';
-}
-
-function renderDemoData() {
-    const demoData = [
-        {
-            id: 'exp-demo-1',
-            _id: '1',
-            title: "Mesure de la qualité de l'air",
-            status: "active",
-            cluster_id: 2,
-            protocol: "Air Quality Monitoring",
-            description: "Surveillance des particules fines dans le centre-ville.",
-            school: "Lycée Victor Hugo",
-            city: "Aix-en-Provence",
-            createdAt: new Date().toISOString()
-        },
-        {
-            id: 'exp-demo-2',
-            _id: '2',
-            title: "Niveau sonore campus",
-            status: "completed",
-            cluster_id: 2,
-            protocol: "Sound Mapping",
-            description: "Analyse du bruit ambiant pendant les heures de cours.",
-            school: "Collège Marie Curie",
-            city: "Marseille",
-            createdAt: new Date(Date.now() - 86400000).toISOString()
-        },
-        {
-            id: 'exp-demo-3',
-            _id: '3',
-            title: "Mobilité urbaine",
-            status: "pending",
-            cluster_id: 3,
-            protocol: "Mobility Patterns Analysis",
-            description: "Étude des déplacements dans le quartier universitaire.",
-            school: "Lycée Thiers",
-            city: "Marseille",
-            createdAt: new Date(Date.now() - 172800000).toISOString()
-        },
-        {
-            id: 'exp-demo-4',
-            _id: '4',
-            title: "Consommation énergétique",
-            status: "active",
-            cluster_id: 4,
-            protocol: "Energy Audit",
-            description: "Monitoring de la consommation électrique du bâtiment.",
-            school: "École Jules Ferry",
-            city: "Aix-en-Provence",
-            createdAt: new Date(Date.now() - 259200000).toISOString()
-        },
-        {
-            id: 'exp-demo-5',
-            _id: '5',
-            title: "IA et reconnaissance d'images",
-            status: "active",
-            cluster_id: 5,
-            protocol: "Computer Vision",
-            description: "Classification automatique d'images urbaines par IA.",
-            school: "Lycée Vauvenargues",
-            city: "Aix-en-Provence",
-            createdAt: new Date(Date.now() - 345600000).toISOString()
-        }
-    ];
-    allExperiments = demoData;
-    applyFilters();
 }
 
 function getStatusLabel(status) {
@@ -276,15 +237,15 @@ async function showDetails(exp) {
         <div class="detail-section">
             <p><strong>Statut:</strong> <span class="experiment-status status-${exp.status}">${getStatusLabel(exp.status)}</span></p>
             ${clusterInfo ? `<p><strong>Cluster:</strong> <span style="color: ${clusterColor};">${clusterInfo.icon} ${clusterInfo.label}</span></p>` : ''}
-            ${exp.protocol ? `<p><strong>Protocole:</strong> 🔬 ${exp.protocol}</p>` : ''}
+            ${exp.protocol_name || exp.protocol ? `<p><strong>Protocole:</strong> 🔬 ${exp.protocol_name || exp.protocol}</p>` : ''}
             ${exp.school ? `<p><strong>École:</strong> 🏫 ${exp.school}</p>` : ''}
             ${exp.city ? `<p><strong>Ville:</strong> 📍 ${exp.city}</p>` : ''}
             <p><strong>Description:</strong></p>
             <p class="detail-description">${exp.description || 'Pas de description'}</p>
             ${exp.methodology ? `<p><strong>Méthodologie:</strong></p><p class="detail-methodology">${exp.methodology}</p>` : ''}
-            ${exp.hypothesis ? `<p><strong>Hypothèse:</strong></p><p class="detail-methodology">${exp.hypothesis}</p>` : ''}
+            ${exp.hypotheses || exp.hypothesis ? `<p><strong>Hypothèse:</strong></p><p class="detail-methodology">${exp.hypotheses || exp.hypothesis}</p>` : ''}
             ${exp.conclusions ? `<p><strong>Conclusions:</strong></p><p class="detail-methodology">${exp.conclusions}</p>` : ''}
-            <p><strong>Date de création:</strong> ${new Date(exp.createdAt || Date.now()).toLocaleString()}</p>
+            <p><strong>Date de création:</strong> ${new Date(exp.created_at || exp.createdAt || Date.now()).toLocaleString()}</p>
             <p class="detail-id"><strong>ID:</strong> ${exp.id || exp._id}</p>
         </div>
     `;
@@ -320,15 +281,19 @@ async function loadAssociatedSensors(experimentId, container) {
             if (fallbackResponse.ok) {
                 const result = await fallbackResponse.json();
                 const sensors = result.data || result;
-                renderAssociatedSensors(sensors, container);
+                
+                if (sensors.length === 0) {
+                    container.innerHTML = '<p class="no-data">Aucun capteur associé à cette expérience.</p>';
+                } else {
+                    renderAssociatedSensors(sensors, container);
+                }
             } else {
-                // Afficher des données de démo
-                renderDemoSensors(container);
+                container.innerHTML = '<p class="no-data error">❌ Erreur lors du chargement des capteurs.</p>';
             }
         }
     } catch (error) {
         console.error('Erreur lors du chargement des capteurs:', error);
-        renderDemoSensors(container);
+        container.innerHTML = `<p class="no-data error">❌ Erreur: ${error.message}</p>`;
     }
 }
 
@@ -348,7 +313,7 @@ function renderAssociatedSensors(sensors, container) {
         const sensorCard = document.createElement('div');
         sensorCard.className = 'sensor-card';
         
-        const sensorType = SENSOR_TYPES[sensor.type];
+        const sensorType = SENSOR_TYPES[sensor.type || sensor.sensor_type_id];
         const statusColor = getStatusColor(sensor.status);
         
         sensorCard.innerHTML = `
@@ -357,12 +322,12 @@ function renderAssociatedSensors(sensors, container) {
                 <h4 class="sensor-name">${sensor.name || sensor.id}</h4>
             </div>
             <div class="sensor-card-body">
-                <p class="sensor-type"><strong>Type:</strong> ${sensorType?.name || sensor.type}</p>
+                <p class="sensor-type"><strong>Type:</strong> ${sensorType?.name || sensor.type || sensor.sensor_type_id}</p>
                 <p class="sensor-status">
                     <strong>Statut:</strong> 
                     <span style="color: ${statusColor};">● ${getSensorStatusLabel(sensor.status)}</span>
                 </p>
-                ${sensor.location ? `<p class="sensor-location">📍 ${sensor.location}</p>` : ''}
+                ${sensor.location ? `<p class="sensor-location">📍 ${typeof sensor.location === 'string' ? sensor.location : sensor.location.building || sensor.location.room || 'Non spécifié'}</p>` : ''}
                 ${sensor.last_reading ? `
                     <p class="sensor-reading">
                         <strong>Dernière mesure:</strong> 
@@ -381,45 +346,6 @@ function renderAssociatedSensors(sensors, container) {
         
         grid.appendChild(sensorCard);
     });
-}
-
-/**
- * Affiche des capteurs de démonstration
- */
-function renderDemoSensors(container) {
-    const demoSensors = [
-        {
-            id: 'sensor-demo-1',
-            name: 'Capteur Air - Salle A',
-            type: 'pm25',
-            status: 'online',
-            location: 'Salle A102',
-            last_reading: {
-                value: 35.2,
-                timestamp: new Date()
-            }
-        },
-        {
-            id: 'sensor-demo-2',
-            name: 'Capteur Température - Extérieur',
-            type: 'temperature',
-            status: 'online',
-            location: 'Cour principale',
-            last_reading: {
-                value: 18.5,
-                timestamp: new Date()
-            }
-        },
-        {
-            id: 'sensor-demo-3',
-            name: 'Capteur Bruit - Couloir',
-            type: 'noise',
-            status: 'maintenance',
-            location: 'Couloir B'
-        }
-    ];
-    
-    renderAssociatedSensors(demoSensors, container);
 }
 
 /**

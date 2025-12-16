@@ -80,24 +80,38 @@ export async function refresh() {
     }, 100);
 
     try {
+        console.log('🔍 Chargement des expériences depuis:', API_ENDPOINTS.experiments);
         const response = await fetch(API_ENDPOINTS.experiments);
-        if (response.ok) {
-            const result = await response.json();
-            allExperiments = result.data || result;
-            displayExperiments(allExperiments);
-        } else {
-            console.warn('Impossible de charger les expériences pour la carte');
-            displayDemoData();
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
+        
+        const result = await response.json();
+        console.log('📦 Données reçues:', result);
+        
+        if (!result.success) {
+            throw new Error(result.error || 'Erreur API inconnue');
+        }
+        
+        allExperiments = result.data || [];
+        console.log(`📊 ${allExperiments.length} expérience(s) chargée(s)`);
+        
+        if (allExperiments.length === 0) {
+            console.warn('⚠️ Aucune expérience trouvée. Avez-vous exécuté le script seed ?');
+            alert('Aucune expérience trouvée dans la base de données. Veuillez exécuter : npm run seed');
+            return;
+        }
+        
+        displayExperiments(allExperiments);
     } catch (error) {
-        console.error('Erreur lors du chargement de la carte:', error);
-        displayDemoData();
+        console.error('❌ Erreur lors du chargement de la carte:', error);
+        alert(`Erreur de connexion à l'API: ${error.message}\n\nAssurez-vous que l'API est démarrée (npm run dev:api)`);
     }
 }
 
 /**
  * Affiche les marqueurs des expériences sur la carte
- * @param {Array} experiments - Liste des expériences
  */
 function displayExperiments(experiments) {
     // Nettoyer tous les marqueurs existants
@@ -159,6 +173,8 @@ function displayExperiments(experiments) {
     // Ajuster la vue de la carte pour afficher tous les marqueurs
     if (validMarkersCount > 0) {
         adjustMapBounds();
+    } else {
+        alert('Aucune expérience avec coordonnées GPS trouvée.');
     }
 }
 
@@ -166,73 +182,27 @@ function displayExperiments(experiments) {
  * Ajuste la vue de la carte pour afficher tous les marqueurs visibles
  */
 function adjustMapBounds() {
-    const allMarkers = [];
-    
-    // Collecter tous les marqueurs visibles
-    for (let clusterId in markersLayer) {
-        if (map.hasLayer(markersLayer[clusterId])) {
-            markersLayer[clusterId].eachLayer(marker => {
-                allMarkers.push(marker.getLatLng());
-            });
+    try {
+        const bounds = L.latLngBounds([]);
+        let hasMarkers = false;
+        
+        // Collecter les coordonnées de tous les marqueurs visibles
+        for (let clusterId in markersLayer) {
+            if (map.hasLayer(markersLayer[clusterId])) {
+                markersLayer[clusterId].eachLayer(marker => {
+                    bounds.extend(marker.getLatLng());
+                    hasMarkers = true;
+                });
+            }
         }
-    }
-    
-    // Si on a des marqueurs, ajuster la vue
-    if (allMarkers.length > 0) {
-        const group = L.featureGroup(Object.values(markersLayer).filter(layer => map.hasLayer(layer)));
-        map.fitBounds(group.getBounds().pad(0.1));
-    }
-}
-
-/**
- * Affiche des données de démonstration si l'API n'est pas disponible
- */
-function displayDemoData() {
-    const demoExperiments = [
-        {
-            id: 'demo-1',
-            title: "Qualité de l'air - Centre Ville",
-            cluster_id: 2,
-            school: "Lycée Victor Hugo",
-            city: "Aix-en-Provence",
-            // Format GeoJSON: [longitude, latitude]
-            location: { coordinates: [5.447427, 43.529742] }
-        },
-        {
-            id: 'demo-2',
-            title: "Bruit - Campus",
-            cluster_id: 2,
-            school: "Collège Marie Curie",
-            city: "Marseille",
-            location: { coordinates: [5.379600, 43.296482] }
-        },
-        {
-            id: 'demo-3',
-            title: "Mobilité urbaine",
-            cluster_id: 3,
-            school: "Lycée Thiers",
-            city: "Marseille",
-            location: { coordinates: [5.381800, 43.298000] }
-        },
-        {
-            id: 'demo-4',
-            title: "Consommation énergétique",
-            cluster_id: 4,
-            school: "École Jules Ferry",
-            city: "Aix-en-Provence",
-            location: { coordinates: [5.445000, 43.532000] }
-        },
-        {
-            id: 'demo-5',
-            title: "IA et reconnaissance d'images",
-            cluster_id: 5,
-            school: "Lycée Vauvenargues",
-            city: "Aix-en-Provence",
-            location: { coordinates: [5.450000, 43.528000] }
+        
+        // Ajuster la vue si on a au moins un marqueur
+        if (hasMarkers && bounds.isValid()) {
+            map.fitBounds(bounds.pad(0.1));
         }
-    ];
-    allExperiments = demoExperiments;
-    displayExperiments(demoExperiments);
+    } catch (error) {
+        console.warn('Impossible d\'ajuster les bounds de la carte:', error);
+    }
 }
 
 /**
