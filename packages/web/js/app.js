@@ -5,10 +5,36 @@ import * as SensorsModule from './sensors.js';
 import * as DataModule from './data.js';
 
 /**
+ * Gestion du thème sombre
+ */
+function initTheme() {
+    const themeToggle = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    
+    // Appliquer le thème sauvegardé
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = '☀️';
+    }
+    
+    // Basculer le thème
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        
+        themeToggle.textContent = isDark ? '☀️' : '🌙';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+}
+
+/**
  * Point d'entrée principal de l'application
  */
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Application SteamCity démarrée');
+
+    // Initialiser le thème
+    initTheme();
 
     // Initialiser les modules
     MapModule.init();

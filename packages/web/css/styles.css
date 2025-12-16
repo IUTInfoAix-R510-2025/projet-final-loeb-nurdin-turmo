@@ -1,4 +1,4 @@
-/* Variables globales */
+/* Variables globales - Mode clair */
 :root {
     --primary-color: #2c3e50;
     --secondary-color: #3498db;
@@ -12,6 +12,21 @@
     --border-color: #bdc3c7;
     --shadow: 0 2px 5px rgba(0,0,0,0.1);
     --header-height: 60px;
+}
+
+/* Variables globales - Mode sombre */
+body.dark-mode {
+    --primary-color: #1a252f;
+    --secondary-color: #4a9eff;
+    --accent-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+    --light-bg: #2d3748;
+    --white: #1e293b;
+    --text-color: #e2e8f0;
+    --text-light: #94a3b8;
+    --border-color: #475569;
+    --shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
 /* Reset et styles de base */
@@ -29,6 +44,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* En-tête */
@@ -55,10 +71,39 @@ body {
     margin: 0 auto;
 }
 
+.logo-section {
+    display: flex;
+    align-items: center;
+}
+
 .app-title {
     font-size: 1.5rem;
     font-weight: 600;
     margin: 0;
+}
+
+.theme-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: var(--white);
+    font-size: 1.5rem;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1) rotate(15deg);
+}
+
+body.dark-mode .theme-toggle {
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .app-subtitle {
@@ -143,7 +188,7 @@ body {
 }
 
 .section-header h2 {
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 /* Boutons */
@@ -324,7 +369,7 @@ body {
 
 .experiment-card h3 {
     margin-bottom: 10px;
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .experiment-status {
@@ -470,7 +515,7 @@ body {
     display: block;
     font-weight: 600;
     margin-bottom: 8px;
-    color: var(--primary-color);
+    color: var(--text-color);
     font-size: 1.1rem;
 }
 
@@ -498,9 +543,13 @@ body {
     min-height: 50px;
 }
 
+body.dark-mode .sensors-selection {
+    background-color: #1e293b;
+}
+
 .sensors-selection h4 {
     margin-bottom: 15px;
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .sensors-checkboxes {
@@ -547,7 +596,7 @@ body {
     display: block;
     font-weight: 600;
     margin-bottom: 10px;
-    color: var(--primary-color);
+    color: var(--text-color);
     font-size: 1.1rem;
 }
 
@@ -602,7 +651,7 @@ body {
 
 .comparison-chart h3 {
     margin-bottom: 20px;
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .comparison-chart canvas {
@@ -619,7 +668,7 @@ body {
 
 .statistics-summary h3 {
     margin-bottom: 20px;
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .stats-grid {
@@ -635,9 +684,13 @@ body {
     border: 1px solid var(--border-color);
 }
 
+body.dark-mode .stat-card {
+    background: linear-gradient(135deg, #2d3748 0%, #1e293b 100%);
+}
+
 .stat-card h4 {
     margin-bottom: 15px;
-    color: var(--primary-color);
+    color: var(--text-color);
     font-size: 1.1rem;
     border-bottom: 2px solid var(--secondary-color);
     padding-bottom: 8px;
@@ -691,11 +744,15 @@ th, td {
 th {
     background-color: var(--light-bg);
     font-weight: 600;
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 tr:hover {
-    background-color: #f9f9f9;
+    background-color: rgba(52, 152, 219, 0.05);
+}
+
+body.dark-mode tr:hover {
+    background-color: rgba(74, 158, 255, 0.1);
 }
 
 /* Footer */
@@ -776,7 +833,7 @@ tr:hover {
 .sensor-name {
     font-size: 1rem;
     margin: 0;
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .sensor-card-body {
@@ -880,7 +937,7 @@ tr:hover {
     display: block;
     margin-bottom: 10px;
     font-weight: 500;
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .cluster-filters {
@@ -1027,7 +1084,7 @@ tr:hover {
 .sensor-type h4 {
     margin: 0;
     font-size: 1.1rem;
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .sensor-type small {
