@@ -33,7 +33,7 @@ function adjustColor(color, amount) {
  */
 export function init() {
     const defaultCenter = [43.529742, 5.447427]; // Aix-en-Provence
-    const defaultZoom = 10;
+    const defaultZoom = 3;
 
     if (document.getElementById('map')) {
         map = L.map('map').setView(defaultCenter, defaultZoom);
