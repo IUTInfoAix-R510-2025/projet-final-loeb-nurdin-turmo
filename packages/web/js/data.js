@@ -5,7 +5,7 @@ let allSensors = [];
 let selectedExperiment = null;
 let selectedSensors = [];
 let currentChart = null;
-let currentPeriod = '24h';
+let currentPeriod = '7d';
 let currentMeasurements = [];
 
 /**
